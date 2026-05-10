@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;
+  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;--bg4:#242d42;
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
   --text:#e8eaf0;--text2:#8b93a8;--text3:#4a5268;
   --accent:#3d7fff;--accent-dim:rgba(61,127,255,0.15);
@@ -21,14 +21,8 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:var(--fh);overflow:hidden;}
 
-/* ── HEADER ── */
-.hdr{
-  position:fixed;top:0;left:0;right:0;z-index:50;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 1.5rem;height:var(--hdr);
-  background:rgba(15,17,23,0.92);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-}
+/* HEADER */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:var(--hdr);background:rgba(15,17,23,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
 .hdr-l{display:flex;align-items:center;gap:.85rem;}
 .logo{font-family:var(--fm);font-size:11px;font-weight:500;letter-spacing:.15em;background:var(--accent);color:#fff;padding:3px 10px;border-radius:4px;}
 .hdr h1{font-size:14px;font-weight:700;}
@@ -42,27 +36,14 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .nav-btn.active{background:var(--bg2);color:var(--text);border:1px solid var(--border2);}
 .nav-btn:hover:not(.active){color:var(--text);}
 
-/* ── VIEWS ── */
+/* VIEWS */
 .view{position:fixed;top:var(--hdr);left:0;right:0;bottom:0;display:none;}
 .view.active{display:block;}
 
-/* ══════════════════════
-   PLAN VIEW — full screen
-══════════════════════ */
+/* ══ PLAN VIEW ══ */
 #view-plan{background:var(--bg);}
-
-.plan-full{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  padding:1.5rem 1.5rem 2.5rem;
-}
-
-#floorplan{
-  width:100%;height:100%;
-  display:block;
-}
-
-/* SVG */
+.plan-full{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1.2rem 1.2rem 2.8rem;}
+#floorplan{width:100%;height:100%;display:block;}
 .outer-wall{fill:none;stroke:rgba(255,255,255,0.2);stroke-width:2.5;}
 .corridor{fill:rgba(34,201,122,0.08);stroke:rgba(34,201,122,0.2);stroke-width:.8;}
 .dept rect{fill:rgba(255,255,255,0.03);stroke:rgba(255,255,255,0.11);stroke-width:1.2;transition:fill .18s,stroke .18s;}
@@ -79,123 +60,89 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .ds2{fill:var(--text3);font-family:'DM Mono',monospace;text-anchor:middle;pointer-events:none;}
 .exit-mk{fill:var(--red);}
 .north-lbl{fill:var(--text3);font-family:'Syne',sans-serif;font-weight:700;text-anchor:middle;}
-
-/* legend */
-.plan-legend{
-  position:absolute;bottom:0;left:0;right:0;
-  display:flex;gap:1.5rem;align-items:center;justify-content:center;
-  padding:.5rem 1rem;
-  background:rgba(15,17,23,0.7);backdrop-filter:blur(8px);
-  border-top:1px solid var(--border);
-}
+.plan-legend{position:absolute;bottom:0;left:0;right:0;display:flex;gap:1.5rem;align-items:center;justify-content:center;padding:.5rem 1rem;background:rgba(15,17,23,0.75);backdrop-filter:blur(8px);border-top:1px solid var(--border);}
 .leg-i{display:flex;align-items:center;gap:5px;font-family:var(--fm);font-size:11px;color:var(--text3);}
 .leg-dot{width:9px;height:9px;border-radius:50%;}
-.leg-dot.g{background:var(--green);}
-.leg-dot.a{background:var(--amber);}
-.leg-dot.r{background:var(--red);}
+.leg-dot.g{background:var(--green);}.leg-dot.a{background:var(--amber);}.leg-dot.r{background:var(--red);}
 .leg-arr{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid var(--red);}
 
-/* ══════════════════════
-   MODAL — full screen slide
-══════════════════════ */
-.modal-overlay{
-  position:fixed;inset:0;z-index:200;
-  display:flex;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .25s;
-}
-.modal-overlay.open{opacity:1;pointer-events:all;}
+/* ══ SIDE PANELS ══ */
+.overlay{position:fixed;inset:0;z-index:200;display:flex;pointer-events:none;opacity:0;transition:opacity .25s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.ov-backdrop{flex:1;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);cursor:pointer;}
+.ov-panel{height:100%;background:var(--bg2);border-left:1px solid var(--border2);display:flex;flex-direction:column;overflow:hidden;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.overlay.open .ov-panel{transform:translateX(0);}
 
-/* dark left side — click to close */
-.modal-backdrop{
-  flex:1;
-  background:rgba(0,0,0,0.55);
-  backdrop-filter:blur(3px);
-  cursor:pointer;
-}
+/* DEPT PANEL */
+#dept-overlay .ov-panel{width:min(520px,48vw);}
+.dp-head{padding:1.3rem 1.5rem .9rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;flex-shrink:0;}
+.dp-head h2{font-size:19px;font-weight:700;line-height:1.25;}
+.dp-zone{font-family:var(--fm);font-size:10px;color:var(--text3);margin-top:3px;}
+.ov-close{background:none;border:1px solid var(--border2);color:var(--text2);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ov-close:hover{background:var(--bg3);color:var(--text);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:.9rem 1.5rem;flex-shrink:0;}
+.dp-metric{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:.75rem .9rem;}
+.dp-mlbl{font-family:var(--fm);font-size:9px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:5px;}
+.dp-mval{font-size:30px;font-weight:700;line-height:1;color:var(--text2);}
+.dp-mval.cr{color:var(--red);}.dp-mval.ca{color:var(--amber);}.dp-mval.cg{color:var(--green);}
+.dp-body{flex:1;overflow-y:auto;padding:0 1.5rem 1rem;}
+.dp-body::-webkit-scrollbar{width:3px;}
+.dp-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.dp-sec{font-family:var(--fm);font-size:10px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin:.5rem 0 .7rem;display:flex;align-items:center;justify-content:space-between;}
+.dp-cnt{background:var(--bg3);border:1px solid var(--border);padding:2px 8px;border-radius:10px;color:var(--text2);}
 
-/* right panel slides in */
-.modal-panel{
-  width:min(560px,50vw);
-  height:100%;
-  background:var(--bg2);
-  border-left:1px solid var(--border2);
-  display:flex;flex-direction:column;
-  transform:translateX(100%);
-  transition:transform .28s cubic-bezier(.4,0,.2,1);
-  overflow:hidden;
-}
-.modal-overlay.open .modal-panel{transform:translateX(0);}
-
-.mp-head{
-  padding:1.4rem 1.6rem 1rem;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
-  flex-shrink:0;
-}
-.mp-head h2{font-size:20px;font-weight:700;line-height:1.25;color:var(--text);}
-.mp-zone{font-family:var(--fm);font-size:10px;color:var(--text3);margin-top:4px;}
-.mp-close{
-  background:none;border:1px solid var(--border2);color:var(--text2);
-  width:32px;height:32px;border-radius:8px;cursor:pointer;
-  font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.mp-close:hover{background:var(--bg3);color:var(--text);}
-
-.mp-metrics{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
-  padding:1rem 1.6rem;flex-shrink:0;
-}
-.mp-metric{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;}
-.mp-mlbl{font-family:var(--fm);font-size:9px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:6px;}
-.mp-mval{font-size:32px;font-weight:700;line-height:1;color:var(--text2);}
-.mp-mval.cr{color:var(--red);}
-.mp-mval.ca{color:var(--amber);}
-.mp-mval.cg{color:var(--green);}
-
-.mp-body{flex:1;overflow-y:auto;padding:0 1.6rem 1rem;}
-.mp-body::-webkit-scrollbar{width:3px;}
-.mp-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-
-.mp-sec{
-  font-family:var(--fm);font-size:10px;letter-spacing:.07em;
-  color:var(--text3);text-transform:uppercase;
-  margin-bottom:.8rem;margin-top:.5rem;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.mp-cnt{background:var(--bg3);border:1px solid var(--border);padding:2px 9px;border-radius:10px;color:var(--text2);}
-
-.inc-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
-.inc-row:last-child{border-bottom:none;}
-.inc-date{font-family:var(--fm);font-size:10px;color:var(--text3);min-width:76px;padding-top:1px;}
-.inc-b{flex:1;}
-.inc-type{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
-.inc-desc{font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.5;}
-.inc-act{font-family:var(--fm);font-size:10px;color:var(--text3);line-height:1.5;}
-.badge{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:.05em;padding:3px 9px;border-radius:10px;margin-top:6px;text-transform:uppercase;}
+/* incident row — clickable */
+.inc-row{display:flex;gap:12px;padding:12px;border-radius:10px;margin-bottom:6px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:background .15s,border-color .15s;}
+.inc-row:hover{background:var(--bg4);border-color:var(--accent);}
+.inc-row:last-child{margin-bottom:0;}
+.inc-date{font-family:var(--fm);font-size:10px;color:var(--text3);min-width:72px;padding-top:1px;flex-shrink:0;}
+.inc-b{flex:1;min-width:0;}
+.inc-type{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.inc-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px;}
+.inc-act{font-family:var(--fm);font-size:10px;color:var(--text3);}
+.inc-arrow{margin-left:auto;color:var(--text3);font-size:14px;flex-shrink:0;padding-top:1px;}
+.badge{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:.05em;padding:2px 8px;border-radius:10px;text-transform:uppercase;}
 .b-open{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,82,82,.25);}
 .b-closed{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,201,122,.25);}
 .b-prog{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,166,35,.25);}
 .no-inc{text-align:center;padding:2rem;color:var(--text3);font-family:var(--fm);font-size:12px;}
+.dp-actions{display:flex;gap:8px;padding:.9rem 1.5rem;border-top:1px solid var(--border);flex-shrink:0;}
+.dp-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:8px;font-family:var(--fh);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:.15s;}
+.dp-btn:hover{background:rgba(255,255,255,.06);color:var(--text);}
+.dp-btn.prim{background:var(--accent-dim);border-color:rgba(61,127,255,.3);color:#7aaeff;}
+.dp-btn.prim:hover{background:rgba(61,127,255,.25);color:#fff;}
 
-.mp-actions{
-  display:flex;gap:10px;padding:1rem 1.6rem;
-  border-top:1px solid var(--border);flex-shrink:0;
-}
-.mp-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:8px;font-family:var(--fh);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:.15s;}
-.mp-btn:hover{background:rgba(255,255,255,.06);color:var(--text);}
-.mp-btn.prim{background:var(--accent-dim);border-color:rgba(61,127,255,.3);color:#7aaeff;}
-.mp-btn.prim:hover{background:rgba(61,127,255,.25);color:#fff;}
+/* ══ 8D PANEL ══ */
+#eightd-overlay .ov-panel{width:min(580px,52vw);}
+.ed-head{padding:1.3rem 1.5rem .9rem;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ed-back{display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:10px;color:var(--text3);cursor:pointer;margin-bottom:.6rem;width:fit-content;padding:3px 0;}
+.ed-back:hover{color:var(--accent);}
+.ed-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;}
+.ed-title-row h2{font-size:17px;font-weight:700;line-height:1.3;}
+.ed-ref{font-family:var(--fm);font-size:10px;color:var(--text3);margin-top:3px;}
+.ed-status-row{display:flex;align-items:center;gap:8px;margin-top:.7rem;}
 
-/* ══════════════════════
-   DASHBOARD VIEW
-══════════════════════ */
+.ed-body{flex:1;overflow-y:auto;padding:1rem 1.5rem 1rem;}
+.ed-body::-webkit-scrollbar{width:3px;}
+.ed-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+.d-step{margin-bottom:1rem;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.d-step-head{display:flex;align-items:center;gap:10px;padding:.7rem 1rem;background:var(--bg3);}
+.d-num{width:26px;height:26px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(61,127,255,.3);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:10px;font-weight:500;color:var(--accent);flex-shrink:0;}
+.d-num.done{background:var(--green-dim);border-color:rgba(34,201,122,.3);color:var(--green);}
+.d-num.pending{background:var(--bg4);border-color:var(--border);color:var(--text3);}
+.d-step-title{font-size:12px;font-weight:500;color:var(--text);}
+.d-step-sub{font-family:var(--fm);font-size:9px;color:var(--text3);margin-left:auto;}
+.d-step-body{padding:.8rem 1rem;font-size:12px;color:var(--text2);line-height:1.65;border-top:1px solid var(--border);background:var(--bg2);}
+.d-step-body.empty{color:var(--text3);font-family:var(--fm);font-size:11px;}
+
+.ed-actions{display:flex;gap:8px;padding:.9rem 1.5rem;border-top:1px solid var(--border);flex-shrink:0;}
+
+/* ══ DASHBOARD ══ */
 #view-dash{overflow-y:auto;padding:1.2rem;display:none;flex-direction:column;gap:.85rem;}
 #view-dash.active{display:flex;}
 #view-dash::-webkit-scrollbar{width:4px;}
 #view-dash::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-
 .kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;}
 .kpi{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;}
 .kpi-lbl{font-family:var(--fm);font-size:9px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:5px;}
@@ -225,7 +172,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="hdr">
   <div class="hdr-l">
     <span class="logo">LELMA</span>
@@ -242,113 +188,40 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
   </div>
 </header>
 
-<!-- ══ VIEW: PLAN ══ -->
+<!-- PLAN -->
 <div id="view-plan" class="view active">
   <div class="plan-full">
     <svg id="floorplan" viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-      <!-- corridors -->
       <rect class="corridor" x="16" y="16" width="518" height="76"/>
       <rect class="corridor" x="172" y="92" width="70" height="258"/>
       <rect class="corridor" x="362" y="92" width="70" height="112"/>
       <rect class="corridor" x="16" y="308" width="518" height="60"/>
-      <!-- outer wall -->
       <rect class="outer-wall" rx="4" x="15" y="15" width="519" height="472"/>
-
-      <!-- DEPTS -->
-      <g class="dept" data-id="stockage" tabindex="0" role="button">
-        <rect x="16" y="16" width="155" height="75"/>
-        <text x="93" y="46" class="dt" font-size="11">Stockage</text>
-        <text x="93" y="64" class="ds" font-size="8.5">matière vide</text>
-        <circle class="dept-dot" cx="152" cy="29" r="7"/>
-      </g>
-      <g class="dept" data-id="stockage" tabindex="0" role="button">
-        <rect x="433" y="16" width="101" height="75"/>
-        <text x="483" y="46" class="dt" font-size="11">Stockage</text>
-        <text x="483" y="64" class="ds" font-size="8.5">matière vide</text>
-        <circle class="dept-dot" cx="524" cy="29" r="7"/>
-      </g>
-      <g class="dept" data-id="qc" tabindex="0" role="button">
-        <rect x="16" y="92" width="155" height="215"/>
-        <text x="93" y="193" class="dt" font-size="11">QT Contrôle</text>
-        <text x="93" y="212" class="ds" font-size="9">Qualité</text>
-        <text x="93" y="229" class="ds2" font-size="7.5">Consommables &amp; Acc.</text>
-        <circle class="dept-dot" cx="152" cy="107" r="7"/>
-      </g>
-      <g class="dept" data-id="magasinier" tabindex="0" role="button">
-        <rect x="243" y="92" width="118" height="108"/>
-        <text x="302" y="142" class="dt" font-size="11">Bureau</text>
-        <text x="302" y="161" class="ds" font-size="9">Magasinier</text>
-        <circle class="dept-dot" cx="346" cy="107" r="7"/>
-      </g>
-      <g class="dept" data-id="methodes" tabindex="0" role="button">
-        <rect x="243" y="201" width="118" height="106"/>
-        <text x="302" y="248" class="dt" font-size="11">Bureau Méthodes</text>
-        <text x="302" y="267" class="ds" font-size="9">&amp; CONT</text>
-        <circle class="dept-dot" cx="346" cy="215" r="7"/>
-      </g>
-      <g class="dept" data-id="station" tabindex="0" role="button">
-        <rect x="433" y="92" width="101" height="215"/>
-        <text x="483" y="193" class="dt" font-size="10" transform="rotate(-90,483,193)">Station traitement</text>
-        <text x="483" y="215" class="ds" font-size="8" transform="rotate(-90,483,218)">des effluents</text>
-        <circle class="dept-dot" cx="524" cy="107" r="7"/>
-      </g>
-      <g class="dept" data-id="machine" tabindex="0" role="button">
-        <rect x="16" y="308" width="155" height="59"/>
-        <text x="93" y="341" class="dt" font-size="11">Machine</text>
-        <circle class="dept-dot" cx="152" cy="322" r="7"/>
-      </g>
-      <g class="dept" data-id="atelier" tabindex="0" role="button">
-        <rect x="243" y="308" width="189" height="59"/>
-        <text x="337" y="334" class="dt" font-size="11">Atelier</text>
-        <text x="337" y="353" class="ds" font-size="8.5">Traitement de surfaces</text>
-        <circle class="dept-dot" cx="416" cy="322" r="7"/>
-      </g>
-      <g class="dept" data-id="accueil" tabindex="0" role="button">
-        <rect x="16" y="369" width="77" height="53"/>
-        <text x="54" y="399" class="dt" font-size="10">Accueil</text>
-        <circle class="dept-dot" cx="74" cy="382" r="6"/>
-      </g>
-      <g class="dept" data-id="chef" tabindex="0" role="button">
-        <rect x="94" y="369" width="77" height="53"/>
-        <text x="132" y="390" class="dt" font-size="10">Chef</text>
-        <text x="132" y="407" class="ds" font-size="8">de Zone</text>
-        <circle class="dept-dot" cx="152" cy="382" r="6"/>
-      </g>
-      <g class="dept" data-id="infirmerie" tabindex="0" role="button">
-        <rect x="172" y="369" width="70" height="53"/>
-        <text x="207" y="399" class="dt" font-size="10">Infirmerie</text>
-        <circle class="dept-dot" cx="222" cy="382" r="6"/>
-      </g>
-      <g class="dept" data-id="reunion" tabindex="0" role="button">
-        <rect x="348" y="369" width="85" height="53"/>
-        <text x="390" y="390" class="dt" font-size="10">Salle de</text>
-        <text x="390" y="407" class="ds" font-size="8">Réunion</text>
-        <circle class="dept-dot" cx="416" cy="382" r="6"/>
-      </g>
-
-      <!-- static -->
+      <g class="dept" data-id="stockage" tabindex="0" role="button"><rect x="16" y="16" width="155" height="75"/><text x="93" y="46" class="dt" font-size="11">Stockage</text><text x="93" y="64" class="ds" font-size="8.5">matière vide</text><circle class="dept-dot" cx="152" cy="29" r="7"/></g>
+      <g class="dept" data-id="stockage" tabindex="0" role="button"><rect x="433" y="16" width="101" height="75"/><text x="483" y="46" class="dt" font-size="11">Stockage</text><text x="483" y="64" class="ds" font-size="8.5">matière vide</text><circle class="dept-dot" cx="524" cy="29" r="7"/></g>
+      <g class="dept" data-id="qc" tabindex="0" role="button"><rect x="16" y="92" width="155" height="215"/><text x="93" y="193" class="dt" font-size="11">QT Contrôle</text><text x="93" y="212" class="ds" font-size="9">Qualité</text><text x="93" y="229" class="ds2" font-size="7.5">Consommables &amp; Acc.</text><circle class="dept-dot" cx="152" cy="107" r="7"/></g>
+      <g class="dept" data-id="magasinier" tabindex="0" role="button"><rect x="243" y="92" width="118" height="108"/><text x="302" y="142" class="dt" font-size="11">Bureau</text><text x="302" y="161" class="ds" font-size="9">Magasinier</text><circle class="dept-dot" cx="346" cy="107" r="7"/></g>
+      <g class="dept" data-id="methodes" tabindex="0" role="button"><rect x="243" y="201" width="118" height="106"/><text x="302" y="248" class="dt" font-size="11">Bureau Méthodes</text><text x="302" y="267" class="ds" font-size="9">&amp; CONT</text><circle class="dept-dot" cx="346" cy="215" r="7"/></g>
+      <g class="dept" data-id="station" tabindex="0" role="button"><rect x="433" y="92" width="101" height="215"/><text x="483" y="193" class="dt" font-size="10" transform="rotate(-90,483,193)">Station traitement</text><text x="483" y="215" class="ds" font-size="8" transform="rotate(-90,483,218)">des effluents</text><circle class="dept-dot" cx="524" cy="107" r="7"/></g>
+      <g class="dept" data-id="machine" tabindex="0" role="button"><rect x="16" y="308" width="155" height="59"/><text x="93" y="341" class="dt" font-size="11">Machine</text><circle class="dept-dot" cx="152" cy="322" r="7"/></g>
+      <g class="dept" data-id="atelier" tabindex="0" role="button"><rect x="243" y="308" width="189" height="59"/><text x="337" y="334" class="dt" font-size="11">Atelier</text><text x="337" y="353" class="ds" font-size="8.5">Traitement de surfaces</text><circle class="dept-dot" cx="416" cy="322" r="7"/></g>
+      <g class="dept" data-id="accueil" tabindex="0" role="button"><rect x="16" y="369" width="77" height="53"/><text x="54" y="399" class="dt" font-size="10">Accueil</text><circle class="dept-dot" cx="74" cy="382" r="6"/></g>
+      <g class="dept" data-id="chef" tabindex="0" role="button"><rect x="94" y="369" width="77" height="53"/><text x="132" y="390" class="dt" font-size="10">Chef</text><text x="132" y="407" class="ds" font-size="8">de Zone</text><circle class="dept-dot" cx="152" cy="382" r="6"/></g>
+      <g class="dept" data-id="infirmerie" tabindex="0" role="button"><rect x="172" y="369" width="70" height="53"/><text x="207" y="399" class="dt" font-size="10">Infirmerie</text><circle class="dept-dot" cx="222" cy="382" r="6"/></g>
+      <g class="dept" data-id="reunion" tabindex="0" role="button"><rect x="348" y="369" width="85" height="53"/><text x="390" y="390" class="dt" font-size="10">Salle de</text><text x="390" y="407" class="ds" font-size="8">Réunion</text><circle class="dept-dot" cx="416" cy="382" r="6"/></g>
       <g class="dept static"><rect x="16" y="424" width="77" height="50"/><text x="54" y="452" class="ds" font-size="8">Vestiaire H</text></g>
       <g class="dept static"><rect x="94" y="424" width="57" height="50"/><text x="122" y="452" class="ds" font-size="8">Douche H</text></g>
       <g class="dept static"><rect x="152" y="424" width="48" height="50"/><text x="176" y="452" class="ds" font-size="8">WC H</text></g>
       <g class="dept static"><rect x="243" y="424" width="77" height="50"/><text x="281" y="452" class="ds" font-size="8">Vestiaire F</text></g>
       <g class="dept static"><rect x="321" y="424" width="59" height="50"/><text x="350" y="452" class="ds" font-size="8">Douche F</text></g>
       <g class="dept static"><rect x="381" y="424" width="49" height="50"/><text x="405" y="452" class="ds" font-size="8">WC F</text></g>
-
-      <!-- exits -->
       <polygon class="exit-mk" points="0,58 15,50 15,66"/>
       <polygon class="exit-mk" points="548,58 534,50 534,66"/>
       <polygon class="exit-mk" points="272,0 264,15 280,15"/>
       <polygon class="exit-mk" points="466,535 458,520 474,520"/>
-
-      <!-- north -->
-      <g transform="translate(640,35)">
-        <text x="0" y="13" class="north-lbl" font-size="13">N</text>
-        <line x1="7" y1="17" x2="7" y2="42" stroke="#444" stroke-width="2"/>
-        <polygon points="3,17 7,6 11,17" fill="#555"/>
-      </g>
+      <g transform="translate(640,35)"><text x="0" y="13" class="north-lbl" font-size="13">N</text><line x1="7" y1="17" x2="7" y2="42" stroke="#444" stroke-width="2"/><polygon points="3,17 7,6 11,17" fill="#555"/></g>
     </svg>
   </div>
-
   <div class="plan-legend">
     <div class="leg-i"><span class="leg-dot g"></span>Aucun incident</div>
     <div class="leg-i"><span class="leg-dot a"></span>Incidents clôturés</div>
@@ -357,10 +230,10 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
   </div>
 </div>
 
-<!-- ══ VIEW: DASHBOARD ══ -->
+<!-- DASHBOARD -->
 <div id="view-dash" class="view">
   <div class="kpi-row" id="kpi-row"></div>
-  <div class="dash-row two">
+  <div class="dash-row two" style="margin-top:.7rem;">
     <div class="card"><div class="card-title">Pareto — incidents par département</div><div id="pareto"></div></div>
     <div class="card"><div class="card-title">Répartition par type d'incident</div><div class="chart-wrap"><canvas id="type-chart"></canvas></div></div>
   </div>
@@ -368,31 +241,54 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
     <div class="card"><div class="card-title">Statut des 8D</div><div class="chart-wrap"><canvas id="eightd-chart"></canvas></div></div>
     <div class="card"><div class="card-title">Accidents AT par département</div><div class="chart-wrap"><canvas id="rate-chart"></canvas></div></div>
   </div>
-  <div class="card">
-    <div class="card-title">Tableau de bord global</div>
-    <table class="dept-tbl" id="dept-tbl"></table>
+  <div class="card"><div class="card-title">Tableau de bord global</div><table class="dept-tbl" id="dept-tbl"></table></div>
+</div>
+
+<!-- DEPT PANEL -->
+<div class="overlay" id="dept-overlay">
+  <div class="ov-backdrop" onclick="closeDept()"></div>
+  <div class="ov-panel">
+    <div class="dp-head">
+      <div><h2 id="dp-name"></h2><div class="dp-zone" id="dp-zone"></div></div>
+      <button class="ov-close" onclick="closeDept()">✕</button>
+    </div>
+    <div class="dp-metrics" id="dp-metrics"></div>
+    <div class="dp-body">
+      <div class="dp-sec">Incidents <span class="dp-cnt" id="dp-cnt"></span></div>
+      <div id="dp-incs"></div>
+    </div>
+    <div class="dp-actions">
+      <button class="dp-btn prim" id="dp-sheet">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Google Sheet
+      </button>
+      <button class="dp-btn" onclick="closeDept()">← Fermer</button>
+    </div>
   </div>
 </div>
 
-<!-- ══ MODAL PANEL ══ -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal-backdrop" onclick="closeModal()"></div>
-  <div class="modal-panel">
-    <div class="mp-head">
-      <div><h2 id="mp-name"></h2><div class="mp-zone" id="mp-zone"></div></div>
-      <button class="mp-close" onclick="closeModal()">✕</button>
+<!-- 8D PANEL -->
+<div class="overlay" id="eightd-overlay">
+  <div class="ov-backdrop" onclick="close8D()"></div>
+  <div class="ov-panel">
+    <div class="ed-head">
+      <div class="ed-back" onclick="back8D()">← Retour au département</div>
+      <div class="ed-title-row">
+        <div>
+          <h2 id="ed-type"></h2>
+          <div class="ed-ref" id="ed-ref"></div>
+        </div>
+        <button class="ov-close" onclick="close8D()">✕</button>
+      </div>
+      <div class="ed-status-row" id="ed-status-row"></div>
     </div>
-    <div class="mp-metrics" id="mp-metrics"></div>
-    <div class="mp-body">
-      <div class="mp-sec">Derniers incidents <span class="mp-cnt" id="mp-cnt"></span></div>
-      <div id="mp-incs"></div>
-    </div>
-    <div class="mp-actions">
-      <button class="mp-btn prim" id="mp-sheet">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Google Sheet
+    <div class="ed-body" id="ed-body"></div>
+    <div class="ed-actions">
+      <button class="dp-btn prim" id="ed-sheet">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ouvrir 8D dans Sheet
       </button>
-      <button class="mp-btn" onclick="closeModal()">← Fermer</button>
+      <button class="dp-btn" onclick="back8D()">← Retour</button>
     </div>
   </div>
 </div>
@@ -400,45 +296,65 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 <script>
 const CONFIG={SHEET_URL:"https://docs.google.com/spreadsheets/d/VOTRE_GOOGLE_SHEET_ID/edit"};
 
+// ══ DATA ══
 const DEPTS={
   stockage:{name:"Stockage matière vide",zone:"Zone nord",accidents:3,nearMiss:5,open8D:1,incidents:[
-    {date:"12/04/2025",type:"Chute d'objet",desc:"Carton tombé depuis étagère haute (3m)",action:"Fixation étagères renforcée",status:"closed",ref8D:null},
-    {date:"03/02/2025",type:"Glissade",desc:"Sol mouillé sans signalisation",action:"Panneau avertissement + procédure révisée",status:"closed",ref8D:null},
-    {date:"18/01/2025",type:"Presque accident",desc:"Chariot élévateur sans visibilité",action:"Miroir convexe + marquage sol",status:"progress",ref8D:"8D-STK-01"}
+    {id:"INC-STK-01",date:"12/04/2025",type:"Chute d'objet",desc:"Carton tombé depuis étagère haute (3m), opérateur non blessé",action:"Fixation étagères renforcée, zone délimitée",status:"closed",ref8D:null,
+      d1:"Carton de 15kg tombé depuis étagère H=3m lors déstockage. Aucun blessé.",d2:"Chef magasin + HSE",d3:"Zone condamnée, inspection complète des fixations",d4:"Fixation non conforme aux spécifications charge",d5:"Remplacement visserie + formation opérateurs",d6:"Inspection validée par HSE le 20/04/2025",d7:"Procédure rangement mise à jour, affichage charge max",d8:null},
+    {id:"INC-STK-02",date:"03/02/2025",type:"Glissade",desc:"Sol mouillé après nettoyage sans signalisation",action:"Panneau avertissement + procédure révisée",status:"closed",ref8D:null,
+      d1:"Opérateur glissé sur sol mouillé après nettoyage, pas de signalisation.",d2:"Responsable nettoyage + HSE",d3:"Signalisation immédiate zone glissante",d4:"Absence procédure de signalisation post-nettoyage",d5:"Procédure nettoyage révisée, panneaux obligatoires",d6:"Audit procédure nettoyage effectué 10/02/2025",d7:"Formation équipe nettoyage, check-list quotidienne",d8:"Clôturé 15/02/2025"},
+    {id:"INC-STK-03",date:"18/01/2025",type:"Presque accident",desc:"Chariot élévateur sans visibilité au croisement allée B",action:"Miroir convexe + marquage sol",status:"progress",ref8D:"8D-STK-01",
+      d1:"Chariot élévateur a failli percuter un opérateur au croisement allée B. Visibilité nulle à angle droit.",d2:"Chef production + HSE + Maintenance",d3:"Vitesse limitée à 5km/h, signaleur obligatoire",d4:"Absence de miroir convexe au croisement + balisage insuffisant",d5:"Installation miroir convexe, marquage sol jaune, stop obligatoire",d6:"En cours — vérification miroir prévue 25/05/2025",d7:"Procédure circulation engins mise à jour",d8:null}
   ]},
   qc:{name:"QT Contrôle Qualité",zone:"Zone ouest",accidents:1,nearMiss:2,open8D:0,incidents:[
-    {date:"22/03/2025",type:"Coupure",desc:"Pièce tranchante sans gants EPI",action:"Formation EPI obligatoire",status:"closed",ref8D:null},
-    {date:"05/02/2025",type:"Presque accident",desc:"Produit chimique sans étiquette",action:"Procédure étiquetage renforcée",status:"closed",ref8D:null}
+    {id:"INC-QC-01",date:"22/03/2025",type:"Coupure main",desc:"Pièce tranchante manipulée sans gants EPI appropriés",action:"Formation EPI obligatoire",status:"closed",ref8D:null,
+      d1:"Coupure superficielle main gauche lors manipulation pièce aluminium tranchante. Soins infirmerie.",d2:"Chef QC + HSE",d3:"Port gants anti-coupure niveau 3 imposé immédiatement",d4:"EPI inadaptés + formation insuffisante",d5:"Gants niveau 3 distribués, formation EPI obligatoire",d6:"Formation effectuée 28/03/2025, signatures feuille présence",d7:"Affichage EPI obligatoires aux postes de travail",d8:"Clôturé 01/04/2025"},
+    {id:"INC-QC-02",date:"05/02/2025",type:"Presque accident",desc:"Produit chimique stocké sans étiquette de danger",action:"Procédure étiquetage renforcée",status:"closed",ref8D:null,
+      d1:"Bidon produit chimique corrosif sans étiquetage découvert lors audit. Risque manipulation incorrecte.",d2:"Responsable chimique + HSE",d3:"Bidon isolé et étiqueté immédiatement",d4:"Non-conformité au protocole de réception produits chimiques",d5:"Procédure réception renforcée, check-list obligatoire",d6:"Audit produits chimiques complet effectué 12/02/2025",d7:"Intégré au tableau de bord contrôle mensuel",d8:"Clôturé 20/02/2025"}
   ]},
   magasinier:{name:"Bureau Magasinier",zone:"Zone centrale",accidents:0,nearMiss:1,open8D:0,incidents:[
-    {date:"10/03/2025",type:"Presque accident",desc:"Câble électrique apparent au sol",action:"Goulotte câble installée",status:"closed",ref8D:null}
+    {id:"INC-MAG-01",date:"10/03/2025",type:"Presque accident",desc:"Câble électrique apparent au sol, risque trébuchement",action:"Goulotte câble installée",status:"closed",ref8D:null,
+      d1:"Câble d'alimentation PC traversant le passage principal, aucune protection.",d2:"Maintenance + HSE",d3:"Ruban de signalisation posé sur câble",d4:"Installation câble non conforme, goulotte non prévue",d5:"Goulotte de protection installée, câble sécurisé",d6:"Vérification effectuée 15/03/2025",d7:"Inspection mensuelle câblage bureaux ajoutée au planning",d8:"Clôturé 16/03/2025"}
   ]},
   methodes:{name:"Bureau Méthodes & CONT",zone:"Zone centrale",accidents:0,nearMiss:0,open8D:0,incidents:[]},
   atelier:{name:"Atelier Traitement",zone:"Zone principale",accidents:7,nearMiss:12,open8D:3,incidents:[
-    {date:"28/04/2025",type:"Brûlure chimique",desc:"Éclaboussure produit traitement — main droite",action:"8D ouvert — enquête, zone condamnée",status:"open",ref8D:"8D-ATL-01"},
-    {date:"15/04/2025",type:"Irritation resp.",desc:"Ventilation insuffisante pendant traitement",action:"Filtre HEPA commandé, masque P3 obligatoire",status:"progress",ref8D:"8D-ATL-02"},
-    {date:"02/04/2025",type:"Choc machine",desc:"Opérateur coincé entre machine et barrière",action:"Modification barrière, capteur présence",status:"open",ref8D:"8D-ATL-03"},
-    {date:"18/03/2025",type:"Glissade",desc:"Fuite liquide traitement au sol",action:"Bac rétention + revêtement antidérapant",status:"closed",ref8D:null}
+    {id:"INC-ATL-01",date:"28/04/2025",type:"Brûlure chimique",desc:"Éclaboussure produit de traitement sur main droite de l'opératrice",action:"8D ouvert — enquête en cours, zone condamnée",status:"open",ref8D:"8D-ATL-01",
+      d1:"Éclaboussure produit de traitement (NaOH 30%) sur main droite opératrice lors remplissage bac. Brûlure 2ème degré légère, soins médicaux immédiats.",d2:"Chef atelier + HSE + Médecin du travail",d3:"Zone bac condamnée, opératrice en arrêt médical 5j, EPI renforcés pour toute l'équipe",d4:"En cours — analyse: défaut masque + absence écran facial + gants inadaptés",d5:"En cours — commande EPI chimiques niveau supérieur, révision procédure remplissage",d6:"En attente — prévue après réception EPI (05/06/2025)",d7:"En cours — révision complète procédure traitement chimique",d8:null},
+    {id:"INC-ATL-02",date:"15/04/2025",type:"Irritation respiratoire",desc:"Ventilation insuffisante pendant traitement au solvant",action:"Filtre HEPA commandé, masque P3 obligatoire",status:"progress",ref8D:"8D-ATL-02",
+      d1:"2 opérateurs signalent irritation respiratoire après traitement solvant 4h. Mesure air: COV à 180mg/m³ (seuil 100).",d2:"HSE + Maintenance + Médecin travail",d3:"Port masque P3 obligatoire, durée exposition limitée à 2h",d4:"Filtre ventilation saturé + débit insuffisant pour volume atelier",d5:"Filtre HEPA haute capacité commandé, renforcement aspiration localisée",d6:"En cours — mesure air prévue après installation filtre (10/06/2025)",d7:"Planning maintenance préventive ventilation mensuel",d8:null},
+    {id:"INC-ATL-03",date:"02/04/2025",type:"Choc machine",desc:"Opérateur coincé entre machine et barrière fixe lors d'un réglage",action:"Modification barrière, capteur présence en cours",status:"open",ref8D:"8D-ATL-03",
+      d1:"Opérateur coincé entre bras machine et barrière lors réglage manuel. Contusion épaule droite, arrêt 3 jours.",d2:"Chef production + Maintenance + HSE",d3:"Machine condamnée, réglages manuels interdits sans procédure LOTO",d4:"Absence de capteur de présence + barrière trop proche bras machine",d5:"Installation capteur présence laser + modification distance barrière",d6:"En attente installation capteur (livraison 20/05/2025)",d7:"Procédure LOTO réglage machine mise à jour et formalisée",d8:null},
+    {id:"INC-ATL-04",date:"18/03/2025",type:"Glissade",desc:"Fuite liquide de traitement au sol non signalisée",action:"Bac rétention + revêtement antidérapant",status:"closed",ref8D:null,
+      d1:"Opérateur glissé sur flaque liquide de traitement. Entorse cheville légère.",d2:"Maintenance + HSE",d3:"Zone nettoyée et signalisée immédiatement",d4:"Joint bac de rétention défaillant + absence revêtement antidérapant",d5:"Remplacement joint, installation revêtement antidérapant",d6:"Vérification étanchéité effectuée 25/03/2025",d7:"Inspection hebdomadaire joints et revêtements",d8:"Clôturé 28/03/2025"}
   ]},
   machine:{name:"Zone Machine",zone:"Zone ouest",accidents:4,nearMiss:6,open8D:2,incidents:[
-    {date:"20/04/2025",type:"Coincement doigt",desc:"Doigt coincé dans mécanisme presse CNC",action:"Carter protection + procédure LOTO",status:"open",ref8D:"8D-MCH-01"},
-    {date:"07/04/2025",type:"Exposition bruit",desc:"Exposition >85 dB sans protection",action:"EPI auditifs imposés",status:"progress",ref8D:"8D-MCH-02"},
-    {date:"01/03/2025",type:"Presque accident",desc:"Démarrage machine inopiné maintenance",action:"Procédure LOTO + formation équipe",status:"closed",ref8D:null}
+    {id:"INC-MCH-01",date:"20/04/2025",type:"Coincement doigt",desc:"Doigt index coincé dans mécanisme de presse CNC lors changement outil",action:"Carter protection + procédure LOTO",status:"open",ref8D:"8D-MCH-01",
+      d1:"Opérateur coincé index droit dans mécanisme presse CNC lors changement outil sans arrêt complet machine. Fracture phalangette.",d2:"Chef production + Maintenance + HSE + Direction",d3:"Presse condamnée, changement outils interdit sans LOTO, remplacement opérateur",d4:"Absence procédure LOTO formalisée + carter de protection absent sur ce modèle",d5:"Installation carter sécurité + procédure LOTO obligatoire et formalisée",d6:"En attente — installation carter prévue 15/05/2025",d7:"Extension procédure LOTO à toutes les machines atelier",d8:null},
+    {id:"INC-MCH-02",date:"07/04/2025",type:"Exposition bruit",desc:"Exposition >85 dB sans protection auditive — 2 opérateurs",action:"EPI auditifs imposés, affichage niveau sonore",status:"progress",ref8D:"8D-MCH-02",
+      d1:"Mesure sonométrique: 92dB au poste fraisage. 2 opérateurs exposés 8h/j sans protection. Risque perte auditive.",d2:"HSE + Médecin travail + RH",d3:"Port bouchons + casque antibruit imposé immédiatement",d4:"Absence signalisation zone bruit + EPI non distribués systématiquement",d5:"Affichage niveau dB, distribution EPI auditifs, suivi audiométrique",d6:"Audiogramme 2 opérateurs prévu 30/05/2025",d7:"Zone bruit délimitée, EPI auditifs intégrés au vestiaire EPI",d8:null},
+    {id:"INC-MCH-03",date:"01/03/2025",type:"Presque accident",desc:"Démarrage machine inopiné lors d'une intervention maintenance",action:"Procédure LOTO mise en place, formation équipe",status:"closed",ref8D:null,
+      d1:"Machine redémarrée par opérateur alors que technicien maintenance intervenait à l'intérieur. Absence de communication et condamnation.",d2:"Chef maintenance + Chef production + HSE",d3:"Arrêt total zone, consigne affichée sur tableau électrique",d4:"Absence totale procédure LOTO + pas de communication entre équipes",d5:"Procédure LOTO formalisée + cadenas individuels distribués",d6:"Formation LOTO effectuée 10/03/2025, signatures",d7:"Procédure LOTO affichée à chaque machine, audit trimestriel",d8:"Clôturé 15/03/2025"}
   ]},
   station:{name:"Station Effluents",zone:"Zone est",accidents:2,nearMiss:3,open8D:1,incidents:[
-    {date:"25/04/2025",type:"Exposition chimique",desc:"Fuite conduite — produit corrosif",action:"Remplacement conduite, kit urgence",status:"open",ref8D:"8D-STE-01"},
-    {date:"12/03/2025",type:"Glissade",desc:"Humidité autour du bassin",action:"Revêtement antidérapant posé",status:"closed",ref8D:null}
+    {id:"INC-STE-01",date:"25/04/2025",type:"Exposition chimique",desc:"Fuite conduite — produit corrosif répandu sur zone de circulation",action:"Remplacement conduite + kit urgence déployé",status:"open",ref8D:"8D-STE-01",
+      d1:"Fuite conduite DN50 acide sulfurique dilué 10%. Flaque 2m² zone accès. 1 opérateur éclaboussé jambe droite (EPI suffisant, pas de blessure).",d2:"Chef station + HSE + Maintenance + Direction",d3:"Zone condamnée, kit neutralisation déployé, conduite isolée",d4:"Corrosion interne conduite (7 ans sans remplacement préventif)",d5:"Remplacement conduite inox + révision plan maintenance préventif",d6:"En attente — remplacement conduite prévu 10/06/2025",d7:"Programme inspection conduites tous les 3 ans",d8:null},
+    {id:"INC-STE-02",date:"12/03/2025",type:"Glissade",desc:"Humidité excessive autour du bassin de traitement",action:"Revêtement antidérapant posé sur périmètre",status:"closed",ref8D:null,
+      d1:"Opérateur glissé sur périmètre bassin humide lors ronde inspection. Pas de blessure.",d2:"Maintenance + HSE",d3:"Signalisation immédiate, accès limité",d4:"Absence revêtement antidérapant + condensation non maîtrisée",d5:"Revêtement antidérapant R13 posé sur 15m²",d6:"Vérification adhérence effectuée 20/03/2025",d7:"Inspection hebdomadaire état sol périmètre bassin",d8:"Clôturé 22/03/2025"}
   ]},
   accueil:{name:"Accueil",zone:"Zone sud",accidents:0,nearMiss:1,open8D:0,incidents:[
-    {date:"14/02/2025",type:"Presque accident",desc:"Porte automatique bloquée",action:"Capteur porte remplacé",status:"closed",ref8D:null}
+    {id:"INC-ACC-01",date:"14/02/2025",type:"Presque accident",desc:"Porte automatique bloquée sur passage visiteur",action:"Capteur porte remplacé",status:"closed",ref8D:null,
+      d1:"Porte automatique bloquée en position fermée alors que visiteur en passage. Risque coincement.",d2:"Maintenance + Accueil",d3:"Porte mise en mode manuel, consigne accueil",d4:"Capteur présence défaillant (fin de vie)",d5:"Remplacement capteur présence",d6:"Test fonctionnement effectué 18/02/2025",d7:"Maintenance préventive capteurs portes tous les 6 mois",d8:"Clôturé 19/02/2025"}
   ]},
   chef:{name:"Chef de Zone",zone:"Zone sud",accidents:0,nearMiss:0,open8D:0,incidents:[]},
   infirmerie:{name:"Infirmerie",zone:"Zone sud",accidents:0,nearMiss:0,open8D:0,incidents:[]},
   reunion:{name:"Salle de Réunion",zone:"Zone sud",accidents:0,nearMiss:0,open8D:0,incidents:[]}
 };
 
+// ══ STATE ══
 let chartsInit=false;
+let currentDeptId=null;
 
+// ══ INIT ══
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('h-date').textContent=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
   applyDots();updateHeader();bindClicks();
@@ -458,8 +374,8 @@ function updateHeader(){
 }
 function bindClicks(){
   document.querySelectorAll('.dept[data-id]').forEach(el=>{
-    el.addEventListener('click',()=>openModal(el.getAttribute('data-id')));
-    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openModal(el.getAttribute('data-id'));}});
+    el.addEventListener('click',()=>openDept(el.getAttribute('data-id')));
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openDept(el.getAttribute('data-id'));}});
   });
 }
 function switchView(v,btn){
@@ -469,40 +385,98 @@ function switchView(v,btn){
   btn.classList.add('active');
   if(v==='dash'&&!chartsInit){initCharts();chartsInit=true;}
 }
-function openModal(id){
+
+// ══ DEPT PANEL ══
+function openDept(id){
+  currentDeptId=id;
   document.querySelectorAll('.dept').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll(`.dept[data-id="${id}"]`).forEach(el=>el.classList.add('active'));
   const d=DEPTS[id];if(!d)return;
-  document.getElementById('mp-name').textContent=d.name;
-  document.getElementById('mp-zone').textContent=d.zone;
-  document.getElementById('mp-cnt').textContent=d.incidents.length;
+  document.getElementById('dp-name').textContent=d.name;
+  document.getElementById('dp-zone').textContent=d.zone;
+  document.getElementById('dp-cnt').textContent=d.incidents.length;
   const ac=d.accidents>5?'cr':d.accidents>0?'ca':'cg';
   const oc=d.open8D>0?'cr':'cg';
-  document.getElementById('mp-metrics').innerHTML=`
-    <div class="mp-metric"><div class="mp-mlbl">Accidents AT</div><div class="mp-mval ${ac}">${d.accidents}</div></div>
-    <div class="mp-metric"><div class="mp-mlbl">Presque accidents</div><div class="mp-mval ca">${d.nearMiss}</div></div>
-    <div class="mp-metric"><div class="mp-mlbl">8D ouverts</div><div class="mp-mval ${oc}">${d.open8D}</div></div>
-    <div class="mp-metric"><div class="mp-mlbl">Total incidents</div><div class="mp-mval">${d.incidents.length}</div></div>`;
-  document.getElementById('mp-incs').innerHTML=d.incidents.length===0
+  document.getElementById('dp-metrics').innerHTML=`
+    <div class="dp-metric"><div class="dp-mlbl">Accidents AT</div><div class="dp-mval ${ac}">${d.accidents}</div></div>
+    <div class="dp-metric"><div class="dp-mlbl">Presque accidents</div><div class="dp-mval ca">${d.nearMiss}</div></div>
+    <div class="dp-metric"><div class="dp-mlbl">8D ouverts</div><div class="dp-mval ${oc}">${d.open8D}</div></div>
+    <div class="dp-metric"><div class="dp-mlbl">Total incidents</div><div class="dp-mval">${d.incidents.length}</div></div>`;
+
+  document.getElementById('dp-incs').innerHTML=d.incidents.length===0
     ?'<div class="no-inc">✓ Aucun incident enregistré</div>'
-    :d.incidents.map(i=>`
-      <div class="inc-row">
+    :d.incidents.map((i,idx)=>`
+      <div class="inc-row" onclick="openIncident('${id}',${idx})">
         <div class="inc-date">${i.date}</div>
         <div class="inc-b">
-          <div class="inc-type">${i.type}${i.ref8D?` <span style="opacity:.5;font-size:10px;font-family:var(--fm)">${i.ref8D}</span>`:''}</div>
+          <div class="inc-type">
+            ${i.type}
+            ${i.ref8D?`<span class="badge b-open" style="font-size:8px">${i.ref8D}</span>`:''}
+          </div>
           <div class="inc-desc">${i.desc}</div>
-          <div class="inc-act">→ ${i.action}</div>
           <span class="badge ${i.status==='open'?'b-open':i.status==='closed'?'b-closed':'b-prog'}">${i.status==='open'?'Ouvert':i.status==='closed'?'Clôturé':'En cours'}</span>
         </div>
+        <div class="inc-arrow">›</div>
       </div>`).join('');
-  document.getElementById('mp-sheet').onclick=()=>window.open(CONFIG.SHEET_URL,'_blank');
-  document.getElementById('modal-overlay').classList.add('open');
+
+  document.getElementById('dp-sheet').onclick=()=>window.open(CONFIG.SHEET_URL,'_blank');
+  document.getElementById('dept-overlay').classList.add('open');
 }
-function closeModal(){
-  document.getElementById('modal-overlay').classList.remove('open');
+function closeDept(){
+  document.getElementById('dept-overlay').classList.remove('open');
   document.querySelectorAll('.dept').forEach(el=>el.classList.remove('active'));
+  currentDeptId=null;
 }
 
+// ══ INCIDENT / 8D PANEL ══
+function openIncident(deptId,incIdx){
+  const d=DEPTS[deptId];
+  const i=d.incidents[incIdx];
+
+  document.getElementById('ed-type').textContent=i.type;
+  document.getElementById('ed-ref').textContent=`${d.name} · ${i.date}${i.ref8D?' · '+i.ref8D:''}`;
+  document.getElementById('ed-status-row').innerHTML=`
+    <span class="badge ${i.status==='open'?'b-open':i.status==='closed'?'b-closed':'b-prog'}" style="font-size:11px;padding:4px 12px">
+      ${i.status==='open'?'Ouvert':i.status==='closed'?'Clôturé':'En cours'}
+    </span>
+    <span style="font-family:var(--fm);font-size:10px;color:var(--text3)">${i.id||''}</span>`;
+
+  const steps=[
+    {n:'D1',title:'Description du problème',val:i.d1},
+    {n:'D2',title:'Équipe & responsables',val:i.d2},
+    {n:'D3',title:'Actions de containment (immédiates)',val:i.d3},
+    {n:'D4',title:'Cause racine identifiée',val:i.d4},
+    {n:'D5',title:'Actions correctives permanentes',val:i.d5},
+    {n:'D6',title:'Validation de l\'efficacité',val:i.d6},
+    {n:'D7',title:'Actions préventives & généralisation',val:i.d7},
+    {n:'D8',title:'Clôture & félicitations équipe',val:i.d8}
+  ];
+
+  document.getElementById('ed-body').innerHTML=steps.map(s=>{
+    const done=!!s.val&&i.status==='closed';
+    const pending=!s.val;
+    const numCls=done?'done':pending?'pending':'';
+    return`<div class="d-step">
+      <div class="d-step-head">
+        <div class="d-num ${numCls}">${s.n}</div>
+        <div class="d-step-title">${s.title}</div>
+        ${done?'<div class="d-step-sub" style="color:var(--green)">✓ Fait</div>':pending?'<div class="d-step-sub">En attente</div>':'<div class="d-step-sub" style="color:var(--amber)">En cours</div>'}
+      </div>
+      <div class="d-step-body ${pending?'empty':''}">${s.val||'Non renseigné — à compléter dans Google Sheet'}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('ed-sheet').onclick=()=>window.open(CONFIG.SHEET_URL,'_blank');
+  document.getElementById('eightd-overlay').classList.add('open');
+}
+function close8D(){
+  document.getElementById('eightd-overlay').classList.remove('open');
+}
+function back8D(){
+  close8D();
+}
+
+// ══ DASHBOARD ══
 function initCharts(){
   const vals=Object.values(DEPTS);
   let acc=0,nm=0,od=0,tot=0;
