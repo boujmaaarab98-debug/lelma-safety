@@ -9,848 +9,699 @@
 <style>
 :root{
   --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;--bg4:#242d42;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
   --text:#e8eaf0;--text2:#8b93a8;--text3:#4a5268;
   --fh:'Syne',sans-serif;--fm:'DM Mono',monospace;
-  --hdr:52px;--tab:48px;
-  /* SQCDP colors */
-  --s:#f05252;--s-dim:rgba(240,82,82,0.12);--s-border:rgba(240,82,82,0.3);
-  --q:#3d7fff;--q-dim:rgba(61,127,255,0.12);--q-border:rgba(61,127,255,0.3);
-  --c:#22c97a;--c-dim:rgba(34,201,122,0.12);--c-border:rgba(34,201,122,0.3);
-  --d:#f5a623;--d-dim:rgba(245,166,35,0.12);--d-border:rgba(245,166,35,0.3);
-  --p:#a855f7;--p-dim:rgba(168,85,247,0.12);--p-border:rgba(168,85,247,0.3);
-  /* active module vars (updated by JS) */
-  --mod:#f05252;--mod-dim:rgba(240,82,82,0.12);--mod-border:rgba(240,82,82,0.3);
+  --hdr:52px;--tab:46px;
+  --s:#f05252;--q:#3d7fff;--c:#22c97a;--d:#f5a623;--p:#a855f7;
+  --mod:#f05252;--mod-dim:rgba(240,82,82,0.13);--mod-border:rgba(240,82,82,0.35);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:var(--fh);overflow:hidden;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fh);overflow:hidden;}
 
-/* ── HEADER ── */
-.hdr{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;height:var(--hdr);background:rgba(15,17,23,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
-.hdr-l{display:flex;align-items:center;gap:.75rem;}
-.logo{font-family:var(--fm);font-size:11px;font-weight:500;letter-spacing:.15em;background:var(--mod);color:#fff;padding:3px 10px;border-radius:4px;transition:background .3s;}
+/* HEADER */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:60;height:var(--hdr);display:flex;align-items:center;justify-content:space-between;padding:0 1.4rem;background:rgba(15,17,23,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);}
+.hdr-l{display:flex;align-items:center;gap:.8rem;}
+.logo{font-family:var(--fm);font-size:11px;font-weight:500;letter-spacing:.14em;background:var(--mod);color:#fff;padding:3px 10px;border-radius:4px;transition:background .25s;}
 .hdr h1{font-size:14px;font-weight:700;}
 .hdr-sub{font-family:var(--fm);font-size:9px;color:var(--text3);}
 .hdr-r{display:flex;align-items:center;gap:.5rem;}
+.vtog{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.vt{font-family:var(--fh);font-size:11px;font-weight:500;padding:4px 13px;border-radius:5px;border:none;background:transparent;color:var(--text2);cursor:pointer;transition:.15s;}
+.vt.active{background:var(--bg2);color:var(--text);border:1px solid var(--border2);}
+.vt:hover:not(.active){color:var(--text);}
 .mdate{font-family:var(--fm);font-size:10px;color:var(--text3);}
-.view-toggle{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;}
-.vt-btn{font-family:var(--fh);font-size:11px;font-weight:500;padding:4px 14px;border-radius:6px;border:none;background:transparent;color:var(--text2);cursor:pointer;transition:.15s;}
-.vt-btn.active{background:var(--bg2);color:var(--text);border:1px solid var(--border2);}
-.vt-btn:hover:not(.active){color:var(--text);}
 
-/* ── SQCDP TAB BAR ── */
-.sqcdp-bar{position:fixed;top:var(--hdr);left:0;right:0;z-index:55;display:flex;height:var(--tab);background:var(--bg2);border-bottom:1px solid var(--border);}
-.sq-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;font-size:13px;font-weight:700;letter-spacing:.05em;color:var(--text3);border-bottom:3px solid transparent;transition:.2s;position:relative;}
-.sq-tab:hover{color:var(--text2);}
-.sq-tab.active{color:var(--text);border-bottom-color:var(--mod);}
-.sq-tab[data-mod="S"]{--mod-tab:var(--s);}
-.sq-tab[data-mod="Q"]{--mod-tab:var(--q);}
-.sq-tab[data-mod="C"]{--mod-tab:var(--c);}
-.sq-tab[data-mod="D"]{--mod-tab:var(--d);}
-.sq-tab[data-mod="P"]{--mod-tab:var(--p);}
-.sq-tab.active{border-bottom-color:var(--mod-tab);color:var(--mod-tab);}
-.sq-letter{font-size:16px;font-weight:700;}
-.sq-label{font-size:10px;font-weight:500;letter-spacing:.04em;}
-.sq-kpi{position:absolute;right:12px;font-family:var(--fm);font-size:10px;color:var(--text3);}
+/* SQCDP BAR */
+.sqbar{position:fixed;top:var(--hdr);left:0;right:0;z-index:55;height:var(--tab);display:flex;background:var(--bg2);border-bottom:1px solid var(--border);}
+.sqt{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;border-bottom:3px solid transparent;transition:.2s;position:relative;}
+.sqt:hover .sq-l{opacity:.8;}
+.sqt.active{border-bottom-color:var(--sq-c,var(--mod));}
+.sq-row{display:flex;align-items:center;gap:5px;}
+.sq-l{font-size:14px;font-weight:700;transition:.2s;}
+.sq-n{font-size:9.5px;font-weight:500;color:var(--text2);}
+.sq-kpi{font-family:var(--fm);font-size:9px;color:var(--text3);}
+.sqt[data-m="S"]{--sq-c:var(--s);} .sqt[data-m="S"] .sq-l{color:var(--s);}
+.sqt[data-m="Q"]{--sq-c:var(--q);} .sqt[data-m="Q"] .sq-l{color:var(--q);}
+.sqt[data-m="C"]{--sq-c:var(--c);} .sqt[data-m="C"] .sq-l{color:var(--c);}
+.sqt[data-m="D"]{--sq-c:var(--d);} .sqt[data-m="D"] .sq-l{color:var(--d);}
+.sqt[data-m="P"]{--sq-c:var(--p);} .sqt[data-m="P"] .sq-l{color:var(--p);}
 
-/* ── VIEWS ── */
-.view{position:fixed;top:calc(var(--hdr)+var(--tab));left:0;right:0;bottom:0;display:none;}
-.view.active{display:block;}
+/* VIEWS */
+.view{position:fixed;top:calc(var(--hdr) + var(--tab));left:0;right:0;bottom:0;display:none;}
+.view.active{display:flex;flex-direction:column;}
 
-/* ══ PLAN VIEW ══ */
-#view-plan{background:var(--bg);}
-.plan-full{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem 1rem 2.6rem;}
-#floorplan{width:100%;height:100%;display:block;}
-.outer-wall{fill:none;stroke:rgba(255,255,255,0.18);stroke-width:2;}
-.corridor{fill:rgba(255,255,255,0.03);stroke:rgba(255,255,255,0.07);stroke-width:.5;}
-.dept rect{fill:rgba(255,255,255,0.03);stroke:rgba(255,255,255,0.1);stroke-width:1;transition:fill .18s,stroke .18s;}
-.dept.static rect{cursor:default;}
-.dept:not(.static){cursor:pointer;}
-.dept:not(.static):hover rect{fill:var(--mod-dim);stroke:var(--mod);}
-.dept.active rect{fill:var(--mod-dim);stroke:var(--mod);stroke-width:2;}
-.dept-dot{fill:var(--text3);transition:fill .2s;}
-.dept.lv-ok .dept-dot{fill:#22c97a;}
-.dept.lv-warn .dept-dot{fill:#f5a623;}
-.dept.lv-bad .dept-dot{fill:#f05252;}
-.dt{fill:var(--text);font-family:'Syne',sans-serif;font-weight:500;text-anchor:middle;pointer-events:none;}
-.ds{fill:var(--text2);font-family:'DM Mono',monospace;text-anchor:middle;pointer-events:none;}
-.ds2{fill:var(--text3);font-family:'DM Mono',monospace;text-anchor:middle;pointer-events:none;}
-.exit-mk{fill:#f05252;}
-.north-lbl{fill:var(--text3);font-family:'Syne',sans-serif;font-weight:700;text-anchor:middle;}
-.plan-legend{position:absolute;bottom:0;left:0;right:0;display:flex;gap:1.5rem;align-items:center;justify-content:center;padding:.45rem 1rem;background:rgba(15,17,23,0.8);backdrop-filter:blur(8px);border-top:1px solid var(--border);}
+/* PLAN VIEW */
+#vplan{background:var(--bg);position:relative;}
+.plan-area{flex:1;display:flex;align-items:center;justify-content:center;padding:1rem 1rem 0;min-height:0;}
+#fp{width:100%;height:100%;overflow:visible;}
+
+/* SVG floor plan */
+.fp-wall{fill:none;stroke:rgba(255,255,255,0.22);stroke-width:2;}
+.fp-corr{fill:rgba(255,255,255,0.025);stroke:rgba(255,255,255,0.06);stroke-width:.8;}
+.fp-dept rect{fill:rgba(255,255,255,0.04);stroke:rgba(255,255,255,0.12);stroke-width:1;transition:fill .18s,stroke .18s;}
+.fp-dept.static rect{cursor:default;}
+.fp-dept:not(.static){cursor:pointer;}
+.fp-dept:not(.static):hover rect{fill:var(--mod-dim);stroke:var(--mod);stroke-width:1.5;}
+.fp-dept.sel rect{fill:var(--mod-dim);stroke:var(--mod);stroke-width:2.5;}
+.fp-dot{r:7;fill:#4a5268;transition:fill .2s;}
+.fp-dept.lv-ok  .fp-dot{fill:#22c97a;}
+.fp-dept.lv-warn .fp-dot{fill:#f5a623;}
+.fp-dept.lv-bad  .fp-dot{fill:#f05252;}
+.fp-t{fill:var(--text);font-family:'Syne',sans-serif;font-weight:500;text-anchor:middle;dominant-baseline:middle;pointer-events:none;}
+.fp-s{fill:var(--text2);font-family:'DM Mono',monospace;text-anchor:middle;dominant-baseline:middle;pointer-events:none;}
+.fp-s2{fill:#4a5268;font-family:'DM Mono',monospace;text-anchor:middle;dominant-baseline:middle;pointer-events:none;}
+.fp-exit{fill:#f05252;}
+.fp-north{fill:#555;font-family:'Syne',sans-serif;font-weight:700;text-anchor:middle;}
+
+.plan-leg{flex-shrink:0;display:flex;gap:1.4rem;align-items:center;justify-content:center;padding:.45rem;background:rgba(15,17,23,0.8);border-top:1px solid var(--border);}
 .leg-i{display:flex;align-items:center;gap:5px;font-family:var(--fm);font-size:10px;color:var(--text3);}
-.leg-dot{width:8px;height:8px;border-radius:50%;}
+.ldot{width:9px;height:9px;border-radius:50%;display:inline-block;}
 
-/* ══ SIDE PANELS ══ */
-.overlay{position:fixed;inset:0;z-index:200;display:flex;pointer-events:none;opacity:0;transition:opacity .2s;}
-.overlay.open{opacity:1;pointer-events:all;}
-.ov-backdrop{flex:1;background:rgba(0,0,0,0.45);backdrop-filter:blur(3px);cursor:pointer;}
-.ov-panel{height:100%;background:var(--bg2);border-left:1px solid var(--border2);display:flex;flex-direction:column;overflow:hidden;transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);}
-.overlay.open .ov-panel{transform:translateX(0);}
-#dept-overlay .ov-panel{width:min(500px,46vw);}
+/* OVERLAYS */
+.ov{position:fixed;inset:0;z-index:200;display:flex;pointer-events:none;opacity:0;transition:opacity .2s;}
+.ov.open{opacity:1;pointer-events:all;}
+.ov-bg{flex:1;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);cursor:pointer;}
+.ov-p{height:100%;background:var(--bg2);border-left:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);}
+.ov.open .ov-p{transform:none;}
+#ov-dept .ov-p{width:min(490px,45vw);}
 
-/* 8D panel from LEFT */
-#detail-overlay{flex-direction:row-reverse;}
-#detail-overlay .ov-panel{width:min(560px,50vw);border-left:none;border-right:1px solid var(--border2);transform:translateX(-100%);}
-#detail-overlay.open .ov-panel{transform:translateX(0);}
+/* detail from left */
+#ov-det{flex-direction:row-reverse;}
+#ov-det .ov-p{width:min(540px,48vw);border-left:none;border-right:1px solid var(--border2);transform:translateX(-100%);}
+#ov-det.open .ov-p{transform:none;}
 
-/* panel head */
-.p-head{padding:1.2rem 1.4rem .85rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;flex-shrink:0;}
-.p-head h2{font-size:18px;font-weight:700;line-height:1.25;}
-.p-sub{font-family:var(--fm);font-size:10px;color:var(--text3);margin-top:3px;}
-.p-mod-tag{display:inline-block;font-family:var(--fm);font-size:9px;font-weight:500;padding:2px 8px;border-radius:4px;margin-bottom:5px;letter-spacing:.05em;}
-.ov-close{background:none;border:1px solid var(--border2);color:var(--text2);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ov-close:hover{background:var(--bg3);color:var(--text);}
-
-/* metrics */
-.p-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:.85rem 1.4rem;flex-shrink:0;}
-.p-metric{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:.7rem .9rem;}
-.p-mlbl{font-family:var(--fm);font-size:9px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:4px;}
-.p-mval{font-size:28px;font-weight:700;line-height:1;color:var(--text2);}
-.p-mval.cr{color:#f05252;}.p-mval.ca{color:#f5a623;}.p-mval.cg{color:#22c97a;}.p-mval.cb{color:#3d7fff;}.p-mval.cp{color:#a855f7;}
-
-/* items list */
-.p-body{flex:1;overflow-y:auto;padding:0 1.4rem 1rem;}
-.p-body::-webkit-scrollbar{width:3px;}
-.p-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-.p-sec{font-family:var(--fm);font-size:10px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin:.6rem 0;display:flex;align-items:center;justify-content:space-between;}
-.p-cnt{background:var(--bg3);border:1px solid var(--border);padding:1px 8px;border-radius:10px;color:var(--text2);}
-
-.item-row{display:flex;gap:10px;padding:11px;border-radius:9px;margin-bottom:6px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:background .15s,border-color .15s;}
-.item-row:hover{background:var(--bg4);border-color:var(--mod);}
-.item-date{font-family:var(--fm);font-size:9px;color:var(--text3);min-width:68px;padding-top:2px;flex-shrink:0;}
-.item-b{flex:1;min-width:0;}
-.item-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;}
-.item-desc{font-size:11px;color:var(--text2);line-height:1.5;}
-.item-arrow{color:var(--text3);font-size:14px;padding-top:1px;}
-.badge{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:.04em;padding:2px 8px;border-radius:10px;margin-top:4px;text-transform:uppercase;}
-.b-open{background:rgba(240,82,82,.12);color:#f05252;border:1px solid rgba(240,82,82,.25);}
-.b-closed{background:rgba(34,201,122,.12);color:#22c97a;border:1px solid rgba(34,201,122,.25);}
-.b-prog{background:rgba(245,166,35,.12);color:#f5a623;border:1px solid rgba(245,166,35,.25);}
-.no-item{text-align:center;padding:2rem;color:var(--text3);font-family:var(--fm);font-size:12px;}
-
-.p-actions{display:flex;gap:8px;padding:.8rem 1.4rem;border-top:1px solid var(--border);flex-shrink:0;}
-.p-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:7px;font-family:var(--fh);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:.15s;}
-.p-btn:hover{background:rgba(255,255,255,.06);color:var(--text);}
-.p-btn.prim{border-color:var(--mod-border);color:var(--mod);background:var(--mod-dim);}
-.p-btn.prim:hover{filter:brightness(1.1);}
+/* panel internals */
+.ph{padding:1.1rem 1.4rem .8rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;flex-shrink:0;}
+.ph h2{font-size:17px;font-weight:700;line-height:1.25;}
+.ph-sub{font-family:var(--fm);font-size:10px;color:var(--text3);margin-top:3px;}
+.ph-tag{display:inline-block;font-family:var(--fm);font-size:9px;padding:2px 8px;border-radius:4px;margin-bottom:4px;letter-spacing:.04em;background:var(--mod-dim);color:var(--mod);border:1px solid var(--mod-border);}
+.xbtn{background:none;border:1px solid var(--border2);color:var(--text2);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.xbtn:hover{background:var(--bg3);}
+.pm{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:.8rem 1.4rem;flex-shrink:0;}
+.pmc{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;}
+.pml{font-family:var(--fm);font-size:9px;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;margin-bottom:4px;}
+.pmv{font-size:26px;font-weight:700;line-height:1;color:var(--text2);}
+.pmv.cr{color:#f05252;}.pmv.ca{color:#f5a623;}.pmv.cg{color:#22c97a;}.pmv.cb{color:#3d7fff;}.pmv.cp{color:#a855f7;}
+.pb{flex:1;overflow-y:auto;padding:0 1.4rem .8rem;}
+.pb::-webkit-scrollbar{width:3px;}.pb::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.psec{font-family:var(--fm);font-size:10px;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;margin:.55rem 0;display:flex;align-items:center;justify-content:space-between;}
+.pcnt{background:var(--bg3);border:1px solid var(--border);padding:1px 8px;border-radius:10px;color:var(--text2);}
+.irow{display:flex;gap:9px;padding:10px;border-radius:8px;margin-bottom:5px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:.14s;}
+.irow:hover{background:var(--bg4);border-color:var(--mod);}
+.idate{font-family:var(--fm);font-size:9px;color:var(--text3);min-width:66px;padding-top:1px;flex-shrink:0;}
+.ib{flex:1;min-width:0;}
+.ititle{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;}
+.idesc{font-size:11px;color:var(--text2);line-height:1.45;margin-bottom:3px;}
+.iarr{color:var(--text3);font-size:13px;flex-shrink:0;padding-top:1px;}
+.badge{display:inline-block;font-family:var(--fm);font-size:9px;padding:2px 7px;border-radius:9px;text-transform:uppercase;letter-spacing:.04em;}
+.bo{background:rgba(240,82,82,.12);color:#f05252;border:1px solid rgba(240,82,82,.25);}
+.bc{background:rgba(34,201,122,.12);color:#22c97a;border:1px solid rgba(34,201,122,.25);}
+.bp{background:rgba(245,166,35,.12);color:#f5a623;border:1px solid rgba(245,166,35,.25);}
+.noitem{text-align:center;padding:1.5rem;color:var(--text3);font-family:var(--fm);font-size:11px;}
+.pact{display:flex;gap:7px;padding:.75rem 1.4rem;border-top:1px solid var(--border);flex-shrink:0;}
+.pbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:7px;font-family:var(--fh);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:.14s;}
+.pbtn:hover{background:rgba(255,255,255,.05);color:var(--text);}
+.pbtn.pr{background:var(--mod-dim);border-color:var(--mod-border);color:var(--mod);}
+.pbtn.pr:hover{filter:brightness(1.1);}
 
 /* detail steps */
-.d-back{display:flex;align-items:center;gap:5px;font-family:var(--fm);font-size:10px;color:var(--text3);cursor:pointer;margin-bottom:.7rem;width:fit-content;}
-.d-back:hover{color:var(--mod);}
-.d-step{margin-bottom:.75rem;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
-.d-sh{display:flex;align-items:center;gap:9px;padding:.65rem .9rem;background:var(--bg3);}
-.d-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9px;font-weight:500;flex-shrink:0;background:var(--mod-dim);border:1px solid var(--mod-border);color:var(--mod);}
-.d-num.done{background:rgba(34,201,122,.12);border-color:rgba(34,201,122,.3);color:#22c97a;}
-.d-num.pending{background:var(--bg4);border-color:var(--border);color:var(--text3);}
-.d-stitle{font-size:12px;font-weight:500;color:var(--text);}
-.d-ssub{margin-left:auto;font-family:var(--fm);font-size:9px;color:var(--text3);}
-.d-ssub.done{color:#22c97a;}.d-ssub.prog{color:#f5a623;}
-.d-sb{padding:.7rem .9rem;font-size:11px;color:var(--text2);line-height:1.6;border-top:1px solid var(--border);background:var(--bg2);}
-.d-sb.empty{color:var(--text3);font-family:var(--fm);font-size:10px;}
+.dback{display:flex;align-items:center;gap:5px;font-family:var(--fm);font-size:10px;color:var(--text3);cursor:pointer;margin-bottom:.6rem;width:fit-content;}
+.dback:hover{color:var(--mod);}
+.dstep{margin-bottom:.6rem;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.dsh{display:flex;align-items:center;gap:8px;padding:.6rem .85rem;background:var(--bg3);}
+.dnum{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9px;font-weight:500;flex-shrink:0;background:var(--mod-dim);border:1px solid var(--mod-border);color:var(--mod);}
+.dnum.ok{background:rgba(34,201,122,.12);border-color:rgba(34,201,122,.3);color:#22c97a;}
+.dnum.pend{background:var(--bg4);border-color:var(--border);color:var(--text3);}
+.dst{font-size:11px;font-weight:500;color:var(--text);}
+.dss{margin-left:auto;font-family:var(--fm);font-size:9px;color:var(--text3);}
+.dss.ok{color:#22c97a;}.dss.pr{color:#f5a623;}
+.dsb{padding:.6rem .85rem;font-size:11px;color:var(--text2);line-height:1.6;border-top:1px solid var(--border);background:var(--bg2);}
+.dsb.em{color:var(--text3);font-family:var(--fm);font-size:10px;}
 
-/* ══ DASHBOARD ══ */
-#view-dash{overflow-y:auto;padding:1rem;display:none;flex-direction:column;gap:.75rem;}
-#view-dash.active{display:flex;}
-#view-dash::-webkit-scrollbar{width:4px;}
-#view-dash::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem;}
-.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;}
-.kpi-lbl{font-family:var(--fm);font-size:9px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:4px;}
-.kpi-val{font-size:28px;font-weight:700;line-height:1;}
-.kpi-val.cr{color:#f05252;}.kpi-val.ca{color:#f5a623;}.kpi-val.cg{color:#22c97a;}.kpi-val.cb{color:#3d7fff;}.kpi-val.cp{color:#a855f7;}
-.kpi-sub{font-family:var(--fm);font-size:9px;color:var(--text3);margin-top:3px;}
-.dash-row{display:grid;gap:.7rem;}
-.dash-row.two{grid-template-columns:1fr 1fr;}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;}
-.card-title{font-family:var(--fm);font-size:10px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:.85rem;}
-.chart-wrap{position:relative;height:195px;}
-.pareto-row{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
-.pareto-row:last-child{margin-bottom:0;}
-.p-lbl{font-size:11px;color:var(--text2);min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.p-bg{flex:1;height:7px;background:var(--bg3);border-radius:3px;overflow:hidden;}
-.p-fill{height:100%;border-radius:3px;background:var(--mod);transition:width .5s;}
-.p-n{font-family:var(--fm);font-size:10px;color:var(--text3);min-width:28px;text-align:right;}
-.dept-tbl{width:100%;border-collapse:collapse;font-size:11px;}
-.dept-tbl th{font-family:var(--fm);font-size:9px;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;padding:0 6px 7px;text-align:left;border-bottom:1px solid var(--border);}
-.dept-tbl td{padding:7px 6px;border-bottom:1px solid var(--border);color:var(--text2);}
-.dept-tbl tr:last-child td{border-bottom:none;}
-.dept-tbl td:first-child{color:var(--text);font-weight:500;}
-.tv{font-family:var(--fm);font-size:12px;font-weight:500;}
+/* DASHBOARD */
+#vdash{overflow-y:auto;padding:.85rem;gap:.7rem;flex-direction:column;}
+#vdash::-webkit-scrollbar{width:4px;}.#vdash::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.kr{display:grid;grid-template-columns:repeat(5,1fr);gap:.65rem;}
+.kc{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:.8rem .9rem;}
+.kl{font-family:var(--fm);font-size:9px;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;margin-bottom:4px;}
+.kv{font-size:26px;font-weight:700;line-height:1;}
+.kv.cr{color:#f05252;}.kv.ca{color:#f5a623;}.kv.cg{color:#22c97a;}.kv.cb{color:#3d7fff;}.kv.cp{color:#a855f7;}
+.ks{font-family:var(--fm);font-size:9px;color:var(--text3);margin-top:2px;}
+.dr2{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;}
+.dcard{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:.85rem .95rem;}
+.dct{font-family:var(--fm);font-size:9px;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;margin-bottom:.75rem;}
+.cw{position:relative;height:185px;}
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.prow:last-child{margin-bottom:0;}
+.plbl{font-size:11px;color:var(--text2);min-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pbg{flex:1;height:7px;background:var(--bg3);border-radius:3px;overflow:hidden;}
+.pfill{height:100%;border-radius:3px;background:var(--mod);transition:width .5s;}
+.pn{font-family:var(--fm);font-size:10px;color:var(--text3);min-width:24px;text-align:right;}
+.dtbl{width:100%;border-collapse:collapse;font-size:11px;}
+.dtbl th{font-family:var(--fm);font-size:9px;letter-spacing:.05em;color:var(--text3);text-transform:uppercase;padding:0 5px 7px;text-align:left;border-bottom:1px solid var(--border);}
+.dtbl td{padding:6px 5px;border-bottom:1px solid var(--border);color:var(--text2);}
+.dtbl tr:last-child td{border-bottom:none;}
+.dtbl td:first-child{color:var(--text);font-weight:500;}
+.tv{font-family:var(--fm);font-size:11px;font-weight:500;}
 .tv.cr{color:#f05252;}.tv.ca{color:#f5a623;}.tv.cg{color:#22c97a;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="hdr">
   <div class="hdr-l">
-    <span class="logo" id="logo-badge">LELMA</span>
-    <div><h1 id="hdr-title">Sécurité & Incendie</h1><div class="hdr-sub">Zone Franche · Tanger · Lot N°1</div></div>
+    <span class="logo" id="logo">LELMA</span>
+    <div><h1 id="htitle">Sécurité &amp; Incendie</h1><div class="hdr-sub">Zone Franche · Tanger · Lot N°1</div></div>
   </div>
   <div class="hdr-r">
-    <div class="view-toggle">
-      <button class="vt-btn active" onclick="switchView('plan',this)">🗺 Plan</button>
-      <button class="vt-btn" onclick="switchView('dash',this)">📊 Dashboard</button>
+    <div class="vtog">
+      <button class="vt active" onclick="switchView('plan',this)">🗺 Plan</button>
+      <button class="vt" onclick="switchView('dash',this)">📊 Dashboard</button>
     </div>
-    <span class="mdate" id="h-date"></span>
+    <span class="mdate" id="hdate"></span>
   </div>
 </header>
 
-<!-- SQCDP TAB BAR -->
-<div class="sqcdp-bar">
-  <div class="sq-tab active" data-mod="S" onclick="switchModule('S',this)">
-    <span class="sq-letter" style="color:var(--s)">S</span>
-    <span class="sq-label">Sécurité</span>
-    <span class="sq-kpi" id="kpi-S"></span>
-  </div>
-  <div class="sq-tab" data-mod="Q" onclick="switchModule('Q',this)">
-    <span class="sq-letter" style="color:var(--q)">Q</span>
-    <span class="sq-label">Qualité</span>
-    <span class="sq-kpi" id="kpi-Q"></span>
-  </div>
-  <div class="sq-tab" data-mod="C" onclick="switchModule('C',this)">
-    <span class="sq-letter" style="color:var(--c)">C</span>
-    <span class="sq-label">Coût</span>
-    <span class="sq-kpi" id="kpi-C"></span>
-  </div>
-  <div class="sq-tab" data-mod="D" onclick="switchModule('D',this)">
-    <span class="sq-letter" style="color:var(--d)">D</span>
-    <span class="sq-label">Délai</span>
-    <span class="sq-kpi" id="kpi-D"></span>
-  </div>
-  <div class="sq-tab" data-mod="P" onclick="switchModule('P',this)">
-    <span class="sq-letter" style="color:var(--p)">P</span>
-    <span class="sq-label">Personnel</span>
-    <span class="sq-kpi" id="kpi-P"></span>
-  </div>
+<div class="sqbar">
+  <div class="sqt active" data-m="S" onclick="switchMod('S',this)"><div class="sq-row"><span class="sq-l">S</span><span class="sq-n">Sécurité</span></div><span class="sq-kpi" id="kS"></span></div>
+  <div class="sqt" data-m="Q" onclick="switchMod('Q',this)"><div class="sq-row"><span class="sq-l">Q</span><span class="sq-n">Qualité</span></div><span class="sq-kpi" id="kQ"></span></div>
+  <div class="sqt" data-m="C" onclick="switchMod('C',this)"><div class="sq-row"><span class="sq-l">C</span><span class="sq-n">Coût</span></div><span class="sq-kpi" id="kC"></span></div>
+  <div class="sqt" data-m="D" onclick="switchMod('D',this)"><div class="sq-row"><span class="sq-l">D</span><span class="sq-n">Délai</span></div><span class="sq-kpi" id="kD"></span></div>
+  <div class="sqt" data-m="P" onclick="switchMod('P',this)"><div class="sq-row"><span class="sq-l">P</span><span class="sq-n">Personnel</span></div><span class="sq-kpi" id="kP"></span></div>
 </div>
 
-<!-- PLAN VIEW -->
-<div id="view-plan" class="view active">
-  <div class="plan-full">
-    <svg id="floorplan" viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-      <rect class="corridor" x="16" y="16" width="518" height="76"/>
-      <rect class="corridor" x="172" y="92" width="70" height="258"/>
-      <rect class="corridor" x="362" y="92" width="70" height="112"/>
-      <rect class="corridor" x="16" y="308" width="518" height="60"/>
-      <rect class="outer-wall" rx="3" x="15" y="15" width="519" height="472"/>
-      <g class="dept" data-id="stockage" tabindex="0" role="button"><rect x="16" y="16" width="155" height="75"/><text x="93" y="46" class="dt" font-size="11">Stockage</text><text x="93" y="64" class="ds" font-size="8.5">matière vide</text><circle class="dept-dot" cx="152" cy="29" r="7"/></g>
-      <g class="dept" data-id="stockage" tabindex="0" role="button"><rect x="433" y="16" width="101" height="75"/><text x="483" y="46" class="dt" font-size="11">Stockage</text><text x="483" y="64" class="ds" font-size="8.5">matière vide</text><circle class="dept-dot" cx="524" cy="29" r="7"/></g>
-      <g class="dept" data-id="qc" tabindex="0" role="button"><rect x="16" y="92" width="155" height="215"/><text x="93" y="193" class="dt" font-size="11">QT Contrôle</text><text x="93" y="212" class="ds" font-size="9">Qualité</text><text x="93" y="229" class="ds2" font-size="7.5">Consommables &amp; Acc.</text><circle class="dept-dot" cx="152" cy="107" r="7"/></g>
-      <g class="dept" data-id="magasinier" tabindex="0" role="button"><rect x="243" y="92" width="118" height="108"/><text x="302" y="142" class="dt" font-size="11">Bureau</text><text x="302" y="161" class="ds" font-size="9">Magasinier</text><circle class="dept-dot" cx="346" cy="107" r="7"/></g>
-      <g class="dept" data-id="methodes" tabindex="0" role="button"><rect x="243" y="201" width="118" height="106"/><text x="302" y="248" class="dt" font-size="11">Bureau Méthodes</text><text x="302" y="267" class="ds" font-size="9">&amp; CONT</text><circle class="dept-dot" cx="346" cy="215" r="7"/></g>
-      <g class="dept" data-id="station" tabindex="0" role="button"><rect x="433" y="92" width="101" height="215"/><text x="483" y="193" class="dt" font-size="10" transform="rotate(-90,483,193)">Station traitement</text><text x="483" y="215" class="ds" font-size="8" transform="rotate(-90,483,218)">des effluents</text><circle class="dept-dot" cx="524" cy="107" r="7"/></g>
-      <g class="dept" data-id="machine" tabindex="0" role="button"><rect x="16" y="308" width="155" height="59"/><text x="93" y="341" class="dt" font-size="11">Machine</text><circle class="dept-dot" cx="152" cy="322" r="7"/></g>
-      <g class="dept" data-id="atelier" tabindex="0" role="button"><rect x="243" y="308" width="189" height="59"/><text x="337" y="334" class="dt" font-size="11">Atelier</text><text x="337" y="353" class="ds" font-size="8.5">Traitement de surfaces</text><circle class="dept-dot" cx="416" cy="322" r="7"/></g>
-      <g class="dept" data-id="accueil" tabindex="0" role="button"><rect x="16" y="369" width="77" height="53"/><text x="54" y="399" class="dt" font-size="10">Accueil</text><circle class="dept-dot" cx="74" cy="382" r="6"/></g>
-      <g class="dept" data-id="chef" tabindex="0" role="button"><rect x="94" y="369" width="77" height="53"/><text x="132" y="390" class="dt" font-size="10">Chef</text><text x="132" y="407" class="ds" font-size="8">de Zone</text><circle class="dept-dot" cx="152" cy="382" r="6"/></g>
-      <g class="dept" data-id="infirmerie" tabindex="0" role="button"><rect x="172" y="369" width="70" height="53"/><text x="207" y="399" class="dt" font-size="10">Infirmerie</text><circle class="dept-dot" cx="222" cy="382" r="6"/></g>
-      <g class="dept" data-id="reunion" tabindex="0" role="button"><rect x="348" y="369" width="85" height="53"/><text x="390" y="390" class="dt" font-size="10">Salle de</text><text x="390" y="407" class="ds" font-size="8">Réunion</text><circle class="dept-dot" cx="416" cy="382" r="6"/></g>
-      <g class="dept static"><rect x="16" y="424" width="77" height="50"/><text x="54" y="452" class="ds" font-size="8">Vestiaire H</text></g>
-      <g class="dept static"><rect x="94" y="424" width="57" height="50"/><text x="122" y="452" class="ds" font-size="8">Douche H</text></g>
-      <g class="dept static"><rect x="152" y="424" width="48" height="50"/><text x="176" y="452" class="ds" font-size="8">WC H</text></g>
-      <g class="dept static"><rect x="243" y="424" width="77" height="50"/><text x="281" y="452" class="ds" font-size="8">Vestiaire F</text></g>
-      <g class="dept static"><rect x="321" y="424" width="59" height="50"/><text x="350" y="452" class="ds" font-size="8">Douche F</text></g>
-      <g class="dept static"><rect x="381" y="424" width="49" height="50"/><text x="405" y="452" class="ds" font-size="8">WC F</text></g>
-      <polygon class="exit-mk" points="0,58 15,50 15,66"/>
-      <polygon class="exit-mk" points="548,58 534,50 534,66"/>
-      <polygon class="exit-mk" points="272,0 264,15 280,15"/>
-      <polygon class="exit-mk" points="466,535 458,520 474,520"/>
-      <g transform="translate(640,35)"><text x="0" y="13" class="north-lbl" font-size="13">N</text><line x1="7" y1="17" x2="7" y2="42" stroke="#444" stroke-width="2"/><polygon points="3,17 7,6 11,17" fill="#555"/></g>
+<!-- PLAN -->
+<div id="vplan" class="view active">
+  <div class="plan-area">
+    <svg id="fp" viewBox="0 0 660 490" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <!-- corridors -->
+      <rect class="fp-corr" x="15" y="15" width="490" height="72"/>
+      <rect class="fp-corr" x="163" y="87" width="66" height="245"/>
+      <rect class="fp-corr" x="343" y="87" width="66" height="106"/>
+      <rect class="fp-corr" x="15" y="295" width="490" height="57"/>
+      <!-- outer wall -->
+      <rect class="fp-wall" x="14" y="14" rx="3" width="491" height="447"/>
+
+      <!-- STOCKAGE NORD GAUCHE -->
+      <g class="fp-dept" data-id="stockage" tabindex="0" role="button">
+        <rect x="15" y="15" width="147" height="71"/>
+        <circle class="fp-dot" cx="143" cy="27"/>
+        <text class="fp-t" x="88" y="43" font-size="10.5">Stockage</text>
+        <text class="fp-s" x="88" y="60" font-size="8">matière vide</text>
+      </g>
+      <!-- STOCKAGE NORD DROITE -->
+      <g class="fp-dept" data-id="stockage" tabindex="0" role="button">
+        <rect x="410" y="15" width="95" height="71"/>
+        <circle class="fp-dot" cx="495" cy="27"/>
+        <text class="fp-t" x="457" y="43" font-size="10.5">Stockage</text>
+        <text class="fp-s" x="457" y="60" font-size="8">matière vide</text>
+      </g>
+      <!-- QT CONTROLE -->
+      <g class="fp-dept" data-id="qc" tabindex="0" role="button">
+        <rect x="15" y="87" width="147" height="207"/>
+        <circle class="fp-dot" cx="143" cy="100"/>
+        <text class="fp-t" x="88" y="178" font-size="10.5">QT Contrôle</text>
+        <text class="fp-s" x="88" y="195" font-size="8.5">Qualité</text>
+        <text class="fp-s2" x="88" y="211" font-size="7">Consommables &amp; Acc.</text>
+      </g>
+      <!-- BUREAU MAGASINIER -->
+      <g class="fp-dept" data-id="magasinier" tabindex="0" role="button">
+        <rect x="230" y="87" width="112" height="102"/>
+        <circle class="fp-dot" cx="332" cy="100"/>
+        <text class="fp-t" x="286" y="131" font-size="10.5">Bureau</text>
+        <text class="fp-s" x="286" y="149" font-size="8.5">Magasinier</text>
+      </g>
+      <!-- BUREAU METHODES -->
+      <g class="fp-dept" data-id="methodes" tabindex="0" role="button">
+        <rect x="230" y="190" width="112" height="104"/>
+        <circle class="fp-dot" cx="332" cy="203"/>
+        <text class="fp-t" x="286" y="234" font-size="10.5">Bureau Méthodes</text>
+        <text class="fp-s" x="286" y="252" font-size="8.5">&amp; CONT</text>
+      </g>
+      <!-- STATION -->
+      <g class="fp-dept" data-id="station" tabindex="0" role="button">
+        <rect x="410" y="87" width="95" height="207"/>
+        <circle class="fp-dot" cx="495" cy="100"/>
+        <text class="fp-t" x="457" y="185" font-size="9.5" transform="rotate(-90,457,185)">Station traitement</text>
+        <text class="fp-s" x="457" y="205" font-size="7.5" transform="rotate(-90,457,208)">des effluents</text>
+      </g>
+      <!-- MACHINE -->
+      <g class="fp-dept" data-id="machine" tabindex="0" role="button">
+        <rect x="15" y="295" width="147" height="56"/>
+        <circle class="fp-dot" cx="143" cy="308"/>
+        <text class="fp-t" x="88" y="326" font-size="10.5">Machine</text>
+      </g>
+      <!-- ATELIER -->
+      <g class="fp-dept" data-id="atelier" tabindex="0" role="button">
+        <rect x="230" y="295" width="179" height="56"/>
+        <circle class="fp-dot" cx="399" cy="308"/>
+        <text class="fp-t" x="319" y="318" font-size="10.5">Atelier</text>
+        <text class="fp-s" x="319" y="336" font-size="8">Traitement de surfaces</text>
+      </g>
+      <!-- ACCUEIL -->
+      <g class="fp-dept" data-id="accueil" tabindex="0" role="button">
+        <rect x="15" y="352" width="73" height="50"/>
+        <circle class="fp-dot" cx="70" cy="364"/>
+        <text class="fp-t" x="51" y="381" font-size="9.5">Accueil</text>
+      </g>
+      <!-- CHEF DE ZONE -->
+      <g class="fp-dept" data-id="chef" tabindex="0" role="button">
+        <rect x="89" y="352" width="73" height="50"/>
+        <circle class="fp-dot" cx="143" cy="364"/>
+        <text class="fp-t" x="125" y="372" font-size="9.5">Chef</text>
+        <text class="fp-s" x="125" y="388" font-size="7.5">de Zone</text>
+      </g>
+      <!-- INFIRMERIE -->
+      <g class="fp-dept" data-id="infirmerie" tabindex="0" role="button">
+        <rect x="163" y="352" width="66" height="50"/>
+        <circle class="fp-dot" cx="210" cy="364"/>
+        <text class="fp-t" x="196" y="381" font-size="9">Infirmerie</text>
+      </g>
+      <!-- REUNION -->
+      <g class="fp-dept" data-id="reunion" tabindex="0" role="button">
+        <rect x="330" y="352" width="80" height="50"/>
+        <circle class="fp-dot" cx="399" cy="364"/>
+        <text class="fp-t" x="370" y="372" font-size="9.5">Salle de</text>
+        <text class="fp-s" x="370" y="388" font-size="7.5">Réunion</text>
+      </g>
+      <!-- STATIC ROOMS -->
+      <g class="fp-dept static"><rect x="15" y="403" width="73" height="47"/><text class="fp-s" x="51" y="430" font-size="7.5">Vestiaire H</text></g>
+      <g class="fp-dept static"><rect x="89" y="403" width="53" height="47"/><text class="fp-s" x="115" y="430" font-size="7.5">Douche H</text></g>
+      <g class="fp-dept static"><rect x="143" y="403" width="45" height="47"/><text class="fp-s" x="165" y="430" font-size="7.5">WC H</text></g>
+      <g class="fp-dept static"><rect x="230" y="403" width="73" height="47"/><text class="fp-s" x="266" y="430" font-size="7.5">Vestiaire F</text></g>
+      <g class="fp-dept static"><rect x="304" y="403" width="55" height="47"/><text class="fp-s" x="331" y="430" font-size="7.5">Douche F</text></g>
+      <g class="fp-dept static"><rect x="360" y="403" width="48" height="47"/><text class="fp-s" x="384" y="430" font-size="7.5">WC F</text></g>
+      <!-- EXITS -->
+      <polygon class="fp-exit" points="0,55 14,47 14,63"/>
+      <polygon class="fp-exit" points="520,55 506,47 506,63"/>
+      <polygon class="fp-exit" points="258,0 251,14 265,14"/>
+      <polygon class="fp-exit" points="441,504 434,490 448,490"/>
+      <!-- NORTH -->
+      <g transform="translate(603,30)">
+        <text class="fp-north" x="0" y="12" font-size="12">N</text>
+        <line x1="6" y1="15" x2="6" y2="36" stroke="#555" stroke-width="1.5"/>
+        <polygon points="3,15 6,5 9,15" fill="#555"/>
+      </g>
     </svg>
   </div>
-  <div class="plan-legend" id="plan-legend">
-    <div class="leg-i"><span class="leg-dot" style="background:#22c97a"></span>OK</div>
-    <div class="leg-i"><span class="leg-dot" style="background:#f5a623"></span>Attention</div>
-    <div class="leg-i"><span class="leg-dot" style="background:#f05252"></span>Critique</div>
+  <div class="plan-leg">
+    <div class="leg-i"><span class="ldot" style="background:#22c97a"></span>OK / Conforme</div>
+    <div class="leg-i"><span class="ldot" style="background:#f5a623"></span>Attention</div>
+    <div class="leg-i"><span class="ldot" style="background:#f05252"></span>Critique</div>
+    <div class="leg-i"><span style="display:inline-block;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:9px solid #f05252"></span>Issue de secours</div>
   </div>
 </div>
 
-<!-- DASHBOARD VIEW -->
-<div id="view-dash" class="view">
-  <div class="kpi-row" id="kpi-row"></div>
-  <div class="dash-row two" style="margin-top:.6rem;">
-    <div class="card"><div class="card-title" id="chart1-title">Pareto</div><div id="pareto-chart"></div></div>
-    <div class="card"><div class="card-title" id="chart2-title">Répartition</div><div class="chart-wrap"><canvas id="pie-chart"></canvas></div></div>
+<!-- DASHBOARD -->
+<div id="vdash" class="view">
+  <div class="kr" id="kr"></div>
+  <div class="dr2" style="margin-top:.5rem">
+    <div class="dcard"><div class="dct" id="ct1">Pareto</div><div id="pareto"></div></div>
+    <div class="dcard"><div class="dct" id="ct2">Répartition statuts</div><div class="cw"><canvas id="cpie"></canvas></div></div>
   </div>
-  <div class="dash-row two">
-    <div class="card"><div class="card-title" id="chart3-title">Évolution mensuelle</div><div class="chart-wrap"><canvas id="line-chart"></canvas></div></div>
-    <div class="card"><div class="card-title" id="chart4-title">Par département</div><div class="chart-wrap"><canvas id="bar-chart"></canvas></div></div>
+  <div class="dr2">
+    <div class="dcard"><div class="dct" id="ct3">Évolution mensuelle</div><div class="cw"><canvas id="cline"></canvas></div></div>
+    <div class="dcard"><div class="dct" id="ct4">Par département</div><div class="cw"><canvas id="cbar"></canvas></div></div>
   </div>
-  <div class="card"><div class="card-title">Tableau de bord — tous les départements</div><table class="dept-tbl" id="dept-tbl"></table></div>
+  <div class="dcard"><div class="dct">Tableau de bord global</div><table class="dtbl" id="dtbl"></table></div>
 </div>
 
 <!-- DEPT PANEL -->
-<div class="overlay" id="dept-overlay">
-  <div class="ov-backdrop" onclick="closeDept()"></div>
-  <div class="ov-panel">
-    <div class="p-head">
-      <div>
-        <div class="p-mod-tag" id="dp-mod-tag">S — SÉCURITÉ</div>
-        <h2 id="dp-name"></h2>
-        <div class="p-sub" id="dp-zone"></div>
-      </div>
-      <button class="ov-close" onclick="closeDept()">✕</button>
+<div class="ov" id="ov-dept">
+  <div class="ov-bg" onclick="closeDept()"></div>
+  <div class="ov-p">
+    <div class="ph">
+      <div><div class="ph-tag" id="dp-tag">S — SÉCURITÉ</div><h2 id="dp-name"></h2><div class="ph-sub" id="dp-zone"></div></div>
+      <button class="xbtn" onclick="closeDept()">✕</button>
     </div>
-    <div class="p-metrics" id="dp-metrics"></div>
-    <div class="p-body">
-      <div class="p-sec">Enregistrements <span class="p-cnt" id="dp-cnt"></span></div>
+    <div class="pm" id="dp-metrics"></div>
+    <div class="pb">
+      <div class="psec">Enregistrements <span class="pcnt" id="dp-cnt">0</span></div>
       <div id="dp-items"></div>
     </div>
-    <div class="p-actions">
-      <button class="p-btn prim" onclick="openSheet()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Google Sheet
-      </button>
-      <button class="p-btn" onclick="closeDept()">← Fermer</button>
+    <div class="pact">
+      <button class="pbtn pr" onclick="openSheet()">↗ Google Sheet</button>
+      <button class="pbtn" onclick="closeDept()">← Fermer</button>
     </div>
   </div>
 </div>
 
-<!-- DETAIL PANEL (left) -->
-<div class="overlay" id="detail-overlay">
-  <div class="ov-backdrop" onclick="closeDetail()"></div>
-  <div class="ov-panel">
-    <div class="p-head">
+<!-- DETAIL PANEL -->
+<div class="ov" id="ov-det">
+  <div class="ov-bg" onclick="closeDet()"></div>
+  <div class="ov-p">
+    <div class="ph">
       <div>
-        <div class="d-back" onclick="backToDepet()">← Retour au département</div>
+        <div class="dback" onclick="closeDet()">← Retour département</div>
         <h2 id="det-title"></h2>
-        <div class="p-sub" id="det-sub"></div>
-        <div style="margin-top:.5rem;" id="det-status"></div>
+        <div class="ph-sub" id="det-sub"></div>
+        <div style="margin-top:.5rem" id="det-status"></div>
       </div>
-      <button class="ov-close" onclick="closeDetail()">✕</button>
+      <button class="xbtn" onclick="closeDet()">✕</button>
     </div>
-    <div class="p-body" id="det-body"></div>
-    <div class="p-actions">
-      <button class="p-btn prim" onclick="openSheet()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Ouvrir dans Sheet
-      </button>
-      <button class="p-btn" onclick="backToDepet()">← Retour</button>
+    <div class="pb" id="det-body"></div>
+    <div class="pact">
+      <button class="pbtn pr" onclick="openSheet()">↗ Ouvrir dans Sheet</button>
+      <button class="pbtn" onclick="closeDet()">← Retour</button>
     </div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════
-const CONFIG = { SHEET_URL: "https://docs.google.com/spreadsheets/d/VOTRE_GOOGLE_SHEET_ID/edit" };
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/VOTRE_GOOGLE_SHEET_ID/edit";
 
-// ══════════════════════════════════════════
-// MODULE DEFINITIONS
-// ══════════════════════════════════════════
-const MODULES = {
-  S: {
-    label:"Sécurité", color:"#f05252", dim:"rgba(240,82,82,0.12)", border:"rgba(240,82,82,0.3)",
-    hdrTitle:"Sécurité & Incendie",
-    kpiLabel:"AT ouverts",
-    metrics:["Accidents AT","Presque acc.","8D ouverts","Total incidents"],
-    metricKeys:["accidents","nearMiss","open","total"],
-    metricColors:["cr","ca","cr","cb"],
-    itemLabel:"Incidents",
-    detailType:"8D",
-    detailSteps:["D1 — Description","D2 — Équipe","D3 — Containment","D4 — Cause racine","D5 — Actions correctives","D6 — Validation efficacité","D7 — Prévention","D8 — Clôture"],
-    chart1:"Pareto incidents / département",
-    chart2:"Répartition par type",
-    chart3:"Évolution accidents 2025",
-    chart4:"AT par département",
-    tblCols:["Accidents","Presque acc.","8D","Statut"],
-    tblKeys:["accidents","nearMiss","open"],
-  },
-  Q: {
-    label:"Qualité", color:"#3d7fff", dim:"rgba(61,127,255,0.12)", border:"rgba(61,127,255,0.3)",
-    hdrTitle:"Qualité & Non-conformités",
-    kpiLabel:"NCR ouverts",
-    metrics:["Taux rebut (%)","NCR ouvertes","Réclamations","PPM clients"],
-    metricKeys:["rebut","ncr","reclamations","ppm"],
-    metricColors:["ca","cr","cr","cb"],
-    itemLabel:"Non-conformités",
-    detailType:"NCR",
-    detailSteps:["Description NC","Pièces concernées","Containment / tri","Cause racine (5 pourquoi)","Actions correctives","Validation efficacité","Généralisation","Clôture & leçon apprise"],
-    chart1:"Pareto NC / département",
-    chart2:"Répartition par type NC",
-    chart3:"Évolution taux rebut 2025",
-    chart4:"Taux rebut par département (%)",
-    tblCols:["Taux rebut","NCR","Réclamations","Statut"],
-    tblKeys:["rebut","ncr","reclamations"],
-  },
-  C: {
-    label:"Coût", color:"#22c97a", dim:"rgba(34,201,122,0.12)", border:"rgba(34,201,122,0.3)",
-    hdrTitle:"Maîtrise des Coûts",
-    kpiLabel:"Écart budget",
-    metrics:["Budget alloué","Dépenses réelles","Écart (%)","Pertes rebut"],
-    metricKeys:["budget","depenses","ecart","pertes"],
-    metricColors:["cb","ca","cr","cr"],
-    itemLabel:"Écarts budgétaires",
-    detailType:"Analyse coût",
-    detailSteps:["Description écart","Poste budgétaire","Montant & impact","Cause identifiée","Plan de réduction","Validation direction","Prévention budget N+1","Clôture"],
-    chart1:"Pareto coûts / département",
-    chart2:"Répartition dépenses",
-    chart3:"Évolution budget vs réel 2025",
-    chart4:"Écart par département (%)",
-    tblCols:["Budget","Dépenses","Écart %","Statut"],
-    tblKeys:["budget","depenses","ecart"],
-  },
-  D: {
-    label:"Délai", color:"#f5a623", dim:"rgba(245,166,35,0.12)", border:"rgba(245,166,35,0.3)",
-    hdrTitle:"Performance Délais & Livraisons",
-    kpiLabel:"Retards actifs",
-    metrics:["OTD (%)","Commandes retard","Taux service","Jours retard moy."],
-    metricKeys:["otd","retards","service","joursRetard"],
-    metricColors:["cg","cr","cg","ca"],
-    itemLabel:"Retards & écarts délai",
-    detailType:"Analyse retard",
-    detailSteps:["Description retard","Commande / référence","Impact client","Cause retard","Actions de rattrapage","Validation livraison","Prévention planning","Clôture"],
-    chart1:"Pareto retards / département",
-    chart2:"Répartition causes retard",
-    chart3:"Évolution OTD 2025 (%)",
-    chart4:"Retards par département",
-    tblCols:["OTD %","Retards","Jours moy.","Statut"],
-    tblKeys:["otd","retards","joursRetard"],
-  },
-  P: {
-    label:"Personnel", color:"#a855f7", dim:"rgba(168,85,247,0.12)", border:"rgba(168,85,247,0.3)",
-    hdrTitle:"Performance RH & Personnel",
-    kpiLabel:"Absences actives",
-    metrics:["Effectif total","Taux absentéisme","Heures formation","Turn-over (%)"],
-    metricKeys:["effectif","absenteisme","formation","turnover"],
-    metricColors:["cb","cr","cg","ca"],
-    itemLabel:"Événements RH",
-    detailType:"Fiche RH",
-    detailSteps:["Description événement","Collaborateur concerné","Impact production","Cause identifiée","Actions RH / support","Suivi médical / disciplinaire","Plan de prévention","Clôture"],
-    chart1:"Pareto absences / département",
-    chart2:"Répartition types absences",
-    chart3:"Évolution absentéisme 2025 (%)",
-    chart4:"Effectif par département",
-    tblCols:["Effectif","Absences","Formation h","Statut"],
-    tblKeys:["effectif","absenteisme","formation"],
-  }
+const MODS = {
+  S:{label:"Sécurité",color:"#f05252",dim:"rgba(240,82,82,.13)",border:"rgba(240,82,82,.35)",htitle:"Sécurité & Incendie",
+     metrics:["Accidents AT","Presque acc.","8D ouverts","Total incidents"],
+     mk:["accidents","nearMiss","open","total"],mc:["cr","ca","cr","cb"],
+     steps:["D1 — Description","D2 — Équipe","D3 — Containment","D4 — Cause racine","D5 — Actions correctives","D6 — Validation","D7 — Prévention","D8 — Clôture"],
+     tblC:["Accidents","Presque","8D","Statut"],tblK:["accidents","nearMiss","open"],
+     dot:(d)=>d.open>0?'lv-bad':d.accidents>0?'lv-warn':'lv-ok',
+     kpi:(data)=>{let v=0;Object.values(data).forEach(d=>v+=d.open||0);return v+' AT ouverts';}},
+  Q:{label:"Qualité",color:"#3d7fff",dim:"rgba(61,127,255,.13)",border:"rgba(61,127,255,.35)",htitle:"Qualité & Non-conformités",
+     metrics:["Taux rebut (%)","NCR ouvertes","Réclamations","PPM clients"],
+     mk:["rebut","ncr","reclamations","ppm"],mc:["ca","cr","cr","cb"],
+     steps:["Description NC","Pièces concernées","Containment / tri","Cause racine (5P)","Actions correctives","Validation efficacité","Généralisation","Clôture & leçon"],
+     tblC:["Rebut %","NCR","Réclamations","Statut"],tblK:["rebut","ncr","reclamations"],
+     dot:(d)=>d.ncr>3?'lv-bad':d.ncr>0?'lv-warn':'lv-ok',
+     kpi:(data)=>{let v=0;Object.values(data).forEach(d=>v+=d.ncr||0);return v+' NCR ouverts';}},
+  C:{label:"Coût",color:"#22c97a",dim:"rgba(34,201,122,.13)",border:"rgba(34,201,122,.35)",htitle:"Maîtrise des Coûts",
+     metrics:["Budget (kMAD)","Dépenses (kMAD)","Écart (%)","Pertes rebut"],
+     mk:["budget","depenses","ecart","pertes"],mc:["cb","ca","cr","cr"],
+     steps:["Description écart","Poste budgétaire","Montant & impact","Cause identifiée","Plan réduction","Validation direction","Prévention N+1","Clôture"],
+     tblC:["Budget","Dépenses","Écart %","Statut"],tblK:["budget","depenses","ecart"],
+     dot:(d)=>d.ecart>10?'lv-bad':d.ecart>0?'lv-warn':'lv-ok',
+     kpi:(data)=>{let v=0;Object.values(data).forEach(d=>{if((d.ecart||0)>0)v++;});return v+' dépassements';}},
+  D:{label:"Délai",color:"#f5a623",dim:"rgba(245,166,35,.13)",border:"rgba(245,166,35,.35)",htitle:"Performance Délais",
+     metrics:["OTD global (%)","Commandes retard","Taux service (%)","Jours retard moy."],
+     mk:["otd","retards","service","jRetard"],mc:["cg","cr","cg","ca"],
+     steps:["Description retard","Commande / réf.","Impact client","Cause retard","Actions rattrapage","Validation livraison","Prévention planning","Clôture"],
+     tblC:["OTD %","Retards","J. retard","Statut"],tblK:["otd","retards","jRetard"],
+     dot:(d)=>d.otd<80?'lv-bad':d.otd<90?'lv-warn':'lv-ok',
+     kpi:(data)=>{let v=0;Object.values(data).forEach(d=>v+=d.retards||0);return v+' retards actifs';}},
+  P:{label:"Personnel",color:"#a855f7",dim:"rgba(168,85,247,.13)",border:"rgba(168,85,247,.35)",htitle:"Performance RH & Personnel",
+     metrics:["Effectif total","Absentéisme (%)","Heures formation","Turn-over (%)"],
+     mk:["effectif","absenteisme","formation","turnover"],mc:["cb","cr","cg","ca"],
+     steps:["Description événement","Collaborateur","Impact production","Cause identifiée","Actions RH","Suivi médical","Plan prévention","Clôture"],
+     tblC:["Effectif","Absent %","Formation h","Statut"],tblK:["effectif","absenteisme","formation"],
+     dot:(d)=>d.absenteisme>5?'lv-bad':d.absenteisme>2?'lv-warn':'lv-ok',
+     kpi:(data)=>{let v=0;Object.values(data).forEach(d=>v+=d.items?.filter(i=>i.status!=='closed').length||0);return v+' actifs';}},
 };
 
-// ══════════════════════════════════════════
-// DATA — à remplacer par Google Sheets
-// ══════════════════════════════════════════
-const DEPTS_BASE = [
+const DBASE=[
   {id:"stockage",   name:"Stockage matière vide", zone:"Zone nord"},
-  {id:"qc",         name:"QT Contrôle Qualité",    zone:"Zone ouest"},
-  {id:"magasinier", name:"Bureau Magasinier",       zone:"Zone centrale"},
-  {id:"methodes",   name:"Bureau Méthodes & CONT",  zone:"Zone centrale"},
-  {id:"atelier",    name:"Atelier Traitement",      zone:"Zone principale"},
-  {id:"machine",    name:"Zone Machine",            zone:"Zone ouest"},
-  {id:"station",    name:"Station Effluents",       zone:"Zone est"},
-  {id:"accueil",    name:"Accueil",                 zone:"Zone sud"},
-  {id:"chef",       name:"Chef de Zone",            zone:"Zone sud"},
-  {id:"infirmerie", name:"Infirmerie",              zone:"Zone sud"},
-  {id:"reunion",    name:"Salle de Réunion",        zone:"Zone sud"},
+  {id:"qc",         name:"QT Contrôle Qualité",   zone:"Zone ouest"},
+  {id:"magasinier", name:"Bureau Magasinier",      zone:"Zone centrale"},
+  {id:"methodes",   name:"Bureau Méthodes & CONT", zone:"Zone centrale"},
+  {id:"atelier",    name:"Atelier Traitement",     zone:"Zone principale"},
+  {id:"machine",    name:"Zone Machine",           zone:"Zone ouest"},
+  {id:"station",    name:"Station Effluents",      zone:"Zone est"},
+  {id:"accueil",    name:"Accueil",                zone:"Zone sud"},
+  {id:"chef",       name:"Chef de Zone",           zone:"Zone sud"},
+  {id:"infirmerie", name:"Infirmerie",             zone:"Zone sud"},
+  {id:"reunion",    name:"Salle de Réunion",       zone:"Zone sud"},
 ];
 
-const DATA = {
-  S: {
-    stockage:  {accidents:3,nearMiss:5,open:1,total:3,items:[
-      {id:"INC-STK-01",date:"12/04/2025",title:"Chute d'objet",desc:"Carton 15kg tombé depuis étagère H=3m",status:"closed",steps:["Carton tombé lors déstockage, aucun blessé","Chef magasin + HSE","Zone condamnée, inspection fixations","Fixation non conforme charge","Remplacement visserie + formation","Validé HSE 20/04/2025","Procédure rangement mise à jour","Clôturé 25/04/2025"]},
-      {id:"INC-STK-02",date:"03/02/2025",title:"Glissade",desc:"Sol mouillé sans signalisation",status:"closed",steps:["Glissade sur sol mouillé post-nettoyage","Chef nettoyage + HSE","Signalisation immédiate","Absence procédure signalisation","Panneau obligatoire ajouté","Audit 10/02/2025","Formation équipe nettoyage","Clôturé 15/02/2025"]},
-      {id:"INC-STK-03",date:"18/01/2025",title:"Presque accident",desc:"Chariot élévateur sans visibilité croisement",status:"progress",steps:["Chariot failli heurter opérateur allée B","Chef production + HSE + Maintenance","Vitesse limitée, signaleur obligatoire","Absence miroir convexe","Miroir + marquage sol jaune","En cours — prévu 25/05/2025","Procédure circulation mise à jour",null]}
+// ══ DATA ══
+const DATA={
+  S:{
+    stockage:{accidents:3,nearMiss:5,open:1,total:3,items:[
+      {id:"INC-STK-01",date:"12/04/2025",title:"Chute d'objet",desc:"Carton 15kg tombé depuis étagère H=3m",status:"closed",steps:["Carton tombé lors déstockage. Aucun blessé.","Chef magasin + HSE","Zone condamnée, inspection fixations","Fixation non conforme à la charge","Remplacement visserie + formation","Validé HSE le 20/04/2025","Procédure rangement mise à jour","Clôturé 25/04/2025"]},
+      {id:"INC-STK-02",date:"03/02/2025",title:"Glissade",desc:"Sol mouillé sans signalisation",status:"closed",steps:["Glissade sur sol mouillé post-nettoyage","Chef nettoyage + HSE","Signalisation immédiate zone","Absence procédure signalisation","Panneau obligatoire + procédure","Audit 10/02/2025","Formation équipe nettoyage","Clôturé 15/02/2025"]},
+      {id:"INC-STK-03",date:"18/01/2025",title:"Presque accident",desc:"Chariot élévateur sans visibilité croisement allée B",status:"progress",steps:["Chariot failli heurter opérateur allée B","Chef prod + HSE + Maintenance","Vitesse limitée 5km/h, signaleur","Absence miroir convexe + balisage","Miroir convexe + marquage sol jaune","En cours — vérif prévue 25/05","Procédure circulation engins mise à jour",null]}
     ]},
-    qc:        {accidents:1,nearMiss:2,open:0,total:2,items:[
-      {id:"INC-QC-01",date:"22/03/2025",title:"Coupure main",desc:"Pièce tranchante sans gants EPI",status:"closed",steps:["Coupure superficielle main gauche","Chef QC + HSE","Gants niveau 3 imposés","EPI inadaptés + formation insuffisante","Gants distribués, formation EPI","Formation 28/03/2025","Affichage EPI aux postes","Clôturé 01/04/2025"]}
+    qc:{accidents:1,nearMiss:2,open:0,total:2,items:[
+      {id:"INC-QC-01",date:"22/03/2025",title:"Coupure main",desc:"Pièce tranchante sans gants EPI",status:"closed",steps:["Coupure superficielle main gauche","Chef QC + HSE","Gants niveau 3 imposés immédiatement","EPI inadaptés + formation insuffisante","Gants distribués, formation EPI","Formation 28/03/2025 — signatures","Affichage EPI obligatoires aux postes","Clôturé 01/04/2025"]},
     ]},
     magasinier:{accidents:0,nearMiss:1,open:0,total:1,items:[
-      {id:"INC-MAG-01",date:"10/03/2025",title:"Presque accident",desc:"Câble électrique apparent au sol",status:"closed",steps:["Câble traversant passage principal","Maintenance + HSE","Ruban signalisation posé","Installation câble non conforme","Goulotte installée","Vérif 15/03/2025","Inspection câblage mensuelle","Clôturé 16/03/2025"]}
+      {id:"INC-MAG-01",date:"10/03/2025",title:"Presque accident",desc:"Câble électrique apparent au sol",status:"closed",steps:["Câble traversant passage principal","Maintenance + HSE","Ruban signalisation posé","Installation câble non conforme","Goulotte de protection installée","Vérification 15/03/2025","Inspection câblage mensuelle","Clôturé 16/03/2025"]}
     ]},
-    methodes:  {accidents:0,nearMiss:0,open:0,total:0,items:[]},
-    atelier:   {accidents:7,nearMiss:12,open:3,total:4,items:[
-      {id:"INC-ATL-01",date:"28/04/2025",title:"Brûlure chimique",desc:"Éclaboussure NaOH — main droite opératrice",status:"open",steps:["Brûlure 2ème degré légère — arrêt 5j","Chef atelier + HSE + Médecin","Zone condamnée, EPI renforcés","Défaut masque + gants inadaptés","EPI chimiques commandés","En attente livraison EPI 05/06","Révision procédure traitement chimique",null]},
-      {id:"INC-ATL-02",date:"15/04/2025",title:"Irritation respiratoire",desc:"COV à 180mg/m³ — seuil 100",status:"progress",steps:["2 opérateurs irritation respiratoire","HSE + Maintenance + Médecin","Masque P3 obligatoire, durée limitée 2h","Filtre ventilation saturé","Filtre HEPA commandé","Mesure air prévue 10/06","Maintenance préventive ventilation mensuelle",null]},
-      {id:"INC-ATL-03",date:"02/04/2025",title:"Choc machine",desc:"Opérateur coincé bras machine — contusion",status:"open",steps:["Contusion épaule droite, arrêt 3j","Chef prod + Maintenance + HSE","Machine condamnée, LOTO imposé","Absence capteur présence","Capteur laser + modification barrière","En attente capteur 20/05","LOTO procédure formalisée",null]}
+    methodes:{accidents:0,nearMiss:0,open:0,total:0,items:[]},
+    atelier:{accidents:7,nearMiss:12,open:3,total:4,items:[
+      {id:"INC-ATL-01",date:"28/04/2025",title:"Brûlure chimique",desc:"Éclaboussure NaOH 30% — main droite, brûlure 2ème degré",status:"open",steps:["Brûlure 2ème degré main droite — arrêt 5j","Chef atelier + HSE + Médecin travail","Zone condamnée, EPI renforcés toute équipe","Défaut masque + gants inadaptés produit","EPI chimiques commandés niveau supérieur","En attente livraison EPI 05/06/2025","Révision complète procédure traitement chimique",null]},
+      {id:"INC-ATL-02",date:"15/04/2025",title:"Irritation respiratoire",desc:"COV mesurés à 180mg/m³ — seuil légal 100",status:"progress",steps:["2 opérateurs — irritation respiratoire 4h exposition","HSE + Maintenance + Médecin","Masque P3 obligatoire, durée expo limitée 2h","Filtre ventilation saturé + débit insuffisant","Filtre HEPA haute capacité commandé","Mesure air prévue après installation 10/06","Planning maintenance ventilation mensuel",null]},
+      {id:"INC-ATL-03",date:"02/04/2025",title:"Choc machine",desc:"Opérateur coincé entre bras machine et barrière — contusion épaule",status:"open",steps:["Contusion épaule droite — arrêt 3 jours","Chef prod + Maintenance + HSE","Machine condamnée, LOTO imposé","Absence capteur présence + barrière trop proche","Capteur laser + modification distance barrière","En attente livraison capteur 20/05","Procédure LOTO réglage formalisée",null]},
+      {id:"INC-ATL-04",date:"18/03/2025",title:"Glissade",desc:"Fuite liquide traitement au sol — entorse cheville",status:"closed",steps:["Entorse cheville légère","Maintenance + HSE","Zone nettoyée et signalisée","Joint bac rétention défaillant","Remplacement joint + revêtement antidérapant","Vérification 25/03/2025","Inspection hebdomadaire joints","Clôturé 28/03/2025"]}
     ]},
-    machine:   {accidents:4,nearMiss:6,open:2,total:3,items:[
-      {id:"INC-MCH-01",date:"20/04/2025",title:"Coincement doigt",desc:"Fracture phalangette — presse CNC",status:"open",steps:["Fracture doigt index droit","Chef prod + Maintenance + HSE","Presse condamnée, LOTO imposé","Carter protection absent","Carter + LOTO formalisé","Installation prévue 15/05","Extension LOTO toutes machines",null]},
-      {id:"INC-MCH-02",date:"07/04/2025",title:"Exposition bruit",desc:"92dB — 2 opérateurs exposés 8h/j",status:"progress",steps:["Mesure 92dB poste fraisage","HSE + Médecin + RH","Bouchons + casque imposés","Absence signalisation + EPI","Affichage dB + EPI distribués","Audiogramme prévu 30/05","Zone bruit délimitée",null]}
+    machine:{accidents:4,nearMiss:6,open:2,total:3,items:[
+      {id:"INC-MCH-01",date:"20/04/2025",title:"Coincement doigt",desc:"Fracture phalangette index — presse CNC",status:"open",steps:["Fracture index droit — arrêt 21j minimum","Chef prod + Maintenance + HSE + Direction","Presse condamnée, LOTO imposé, remplacement","Carter protection absent sur ce modèle","Carter sécurité + LOTO formalisé","Installation carter prévue 15/05","Extension LOTO toutes machines atelier",null]},
+      {id:"INC-MCH-02",date:"07/04/2025",title:"Exposition bruit",desc:"92dB mesuré — 2 opérateurs exposés 8h/j sans protection",status:"progress",steps:["Mesure 92dB poste fraisage","HSE + Médecin travail + RH","Bouchons + casque antibruit imposés","Absence signalisation + EPI non distribués","Affichage dB + EPI distribués systématiquement","Audiogramme prévu 30/05","Zone bruit délimitée, EPI au vestiaire",null]},
+      {id:"INC-MCH-03",date:"01/03/2025",title:"Presque accident",desc:"Démarrage machine inopiné lors intervention maintenance",status:"closed",steps:["Machine redémarrée pendant intervention technicien","Chef maintenance + Chef prod + HSE","Arrêt total zone, consigne tableau électrique","Absence totale procédure LOTO","Procédure LOTO formalisée + cadenas individuels","Formation LOTO 10/03/2025","LOTO affiché à chaque machine","Clôturé 15/03/2025"]}
     ]},
-    station:   {accidents:2,nearMiss:3,open:1,total:2,items:[
-      {id:"INC-STE-01",date:"25/04/2025",title:"Fuite acide",desc:"Fuite conduite H2SO4 10% — zone accès",status:"open",steps:["Flaque 2m² acide dilué, 1 éclaboussé","Chef station + HSE + Direction","Zone condamnée, neutralisation","Corrosion conduite 7 ans sans remplacement","Remplacement conduite inox","En attente remplacement 10/06","Inspection conduites tous les 3 ans",null]}
+    station:{accidents:2,nearMiss:3,open:1,total:2,items:[
+      {id:"INC-STE-01",date:"25/04/2025",title:"Fuite acide sulfurique",desc:"Fuite conduite DN50 — flaque 2m² H2SO4 10%",status:"open",steps:["Flaque 2m² acide dilué — 1 éclaboussé (EPI OK)","Chef station + HSE + Maintenance + Direction","Zone condamnée, neutralisation, conduite isolée","Corrosion interne — 7 ans sans remplacement","Remplacement conduite inox","En attente remplacement 10/06/2025","Programme inspection conduites tous les 3 ans",null]},
+      {id:"INC-STE-02",date:"12/03/2025",title:"Glissade bassin",desc:"Humidité excessive périmètre bassin traitement",status:"closed",steps:["Glissade périmètre bassin — pas de blessure","Maintenance + HSE","Signalisation + accès limité","Absence revêtement antidérapant + condensation","Revêtement antidérapant R13 posé 15m²","Vérification 20/03/2025","Inspection hebdomadaire état sol","Clôturé 22/03/2025"]}
     ]},
-    accueil:   {accidents:0,nearMiss:1,open:0,total:1,items:[
-      {id:"INC-ACC-01",date:"14/02/2025",title:"Porte bloquée",desc:"Porte automatique bloquée sur visiteur",status:"closed",steps:["Porte bloquée position fermée","Maintenance + Accueil","Mode manuel + consigne","Capteur fin de vie","Remplacement capteur","Test 18/02/2025","Maintenance préventive 6 mois","Clôturé 19/02/2025"]}
+    accueil:{accidents:0,nearMiss:1,open:0,total:1,items:[
+      {id:"INC-ACC-01",date:"14/02/2025",title:"Porte automatique bloquée",desc:"Porte bloquée sur passage visiteur",status:"closed",steps:["Porte bloquée position fermée","Maintenance + Accueil","Mode manuel + consigne accueil","Capteur présence fin de vie","Remplacement capteur","Test 18/02/2025","Maintenance préventive capteurs 6 mois","Clôturé 19/02/2025"]}
     ]},
-    chef:      {accidents:0,nearMiss:0,open:0,total:0,items:[]},
+    chef:{accidents:0,nearMiss:0,open:0,total:0,items:[]},
     infirmerie:{accidents:0,nearMiss:0,open:0,total:0,items:[]},
-    reunion:   {accidents:0,nearMiss:0,open:0,total:0,items:[]},
+    reunion:{accidents:0,nearMiss:0,open:0,total:0,items:[]},
   },
-  Q: {
-    stockage:  {rebut:1.2,ncr:2,reclamations:0,ppm:120,items:[
-      {id:"NCR-STK-01",date:"15/04/2025",title:"Cartons endommagés",desc:"Cartons reçus déformés — 45 unités non-conformes",status:"closed",steps:["45 cartons déformés réception","Chef magasin + Qualité","Tri 100% lot — mise en quarantaine","Mauvaise palettisation fournisseur","Réclamation fournisseur + renforcement cahier des charges","Validé 22/04/2025","Critères réception mis à jour",null]}
+  Q:{
+    stockage:{rebut:1.2,ncr:2,reclamations:0,ppm:120,items:[
+      {id:"NCR-STK-01",date:"15/04/2025",title:"Cartons endommagés réception",desc:"45 cartons reçus déformés — non-conformes",status:"closed",steps:["45 cartons déformés à la réception","Chef magasin + Qualité","Tri 100% — quarantaine lot","Mauvaise palettisation fournisseur","Réclamation fournisseur + cahier charges","Validé 22/04/2025","Critères réception mis à jour","Clôturé 26/04/2025"]},
+      {id:"NCR-STK-02",date:"02/03/2025",title:"Étiquetage non conforme",desc:"Références illisibles — 120 références affectées",status:"closed",steps:["Étiquettes dégradées humidité","Chef magasin + Qualité","Ré-étiquetage complet du stock","Stockage zone humide","Déménagement stock zone sèche","Contrôle 10/03/2025","Procédure réception étiquetage","Clôturé 12/03/2025"]}
     ]},
-    qc:        {rebut:0.8,ncr:1,reclamations:1,ppm:80,items:[
-      {id:"NCR-QC-01",date:"20/03/2025",title:"Dérive dimensionnelle",desc:"Cotes hors tolérance sur lot pièces aluminium",status:"progress",steps:["12 pièces hors tolérance détectées","Chef QC + Production","Blocage lot, inspection 100%","Usure outil non détectée","Remplacement outil + fréquence mesure augmentée","En cours — validation lot 30/05","Plan surveillance outil mensuel",null]}
+    qc:{rebut:0.8,ncr:1,reclamations:1,ppm:80,items:[
+      {id:"NCR-QC-01",date:"20/03/2025",title:"Dérive dimensionnelle",desc:"Cotes hors tolérance — lot aluminium",status:"progress",steps:["12 pièces hors tolérance détectées","Chef QC + Production","Blocage lot, inspection 100%","Usure outil non détectée","Remplacement outil + mesure fréquence","En cours validation lot 30/05","Plan surveillance outil mensuel",null]}
     ]},
     magasinier:{rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
-    methodes:  {rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
-    atelier:   {rebut:3.5,ncr:6,reclamations:2,ppm:350,items:[
-      {id:"NCR-ATL-01",date:"25/04/2025",title:"Défaut traitement surface",desc:"Épaisseur traitement hors spec — 120 pièces",status:"open",steps:["120 pièces épaisseur <spec","Chef atelier + Qualité + Client","Blocage production, client informé","Paramétrage bain incorrect","Recalibration bain + procédure contrôle","En attente validation client","Contrôle in-process renforcé",null]},
-      {id:"NCR-ATL-02",date:"10/04/2025",title:"Contamination produit",desc:"Traces contamination lot B-2204",status:"progress",steps:["Traces contamination détectées analyse","Qualité + Labo","Quarantaine lot complet","Bac mal nettoyé entre campagnes","Procédure nettoyage bac renforcée","Labo validation en cours","Check-list nettoyage systématique",null]}
+    methodes:{rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
+    atelier:{rebut:3.5,ncr:6,reclamations:2,ppm:350,items:[
+      {id:"NCR-ATL-01",date:"25/04/2025",title:"Défaut traitement surface",desc:"Épaisseur hors spec — 120 pièces bloquées",status:"open",steps:["120 pièces épaisseur <spec client","Chef atelier + Qualité + Client","Blocage production, client informé","Paramétrage bain incorrect","Recalibration bain + procédure contrôle","En attente validation client","Contrôle in-process renforcé",null]},
+      {id:"NCR-ATL-02",date:"10/04/2025",title:"Contamination lot B-2204",desc:"Traces contamination détectées analyse labo",status:"progress",steps:["Contamination détectée analyse labo","Qualité + Labo + Chef atelier","Quarantaine lot complet","Bac mal nettoyé entre campagnes","Procédure nettoyage bac renforcée","Validation labo en cours","Check-list nettoyage systématique",null]}
     ]},
-    machine:   {rebut:2.1,ncr:3,reclamations:1,ppm:210,items:[
-      {id:"NCR-MCH-01",date:"18/04/2025",title:"Tolérances usinages",desc:"Dérive usinage CNC — 30 pièces NG",status:"progress",steps:["30 pièces NG mesure finale","Chef prod + Qualité","Arrêt machine, inspection outillage","Jeu broche excessive","Remplacement broche","En cours — validation 25/05","Maintenance préventive broche trimestrielle",null]}
+    machine:{rebut:2.1,ncr:3,reclamations:1,ppm:210,items:[
+      {id:"NCR-MCH-01",date:"18/04/2025",title:"Dérive usinage CNC",desc:"30 pièces NG mesure finale — tolérance dépassée",status:"progress",steps:["30 pièces NG détectées contrôle final","Chef prod + Qualité","Arrêt machine — inspection outillage","Jeu broche excessif (usure)","Remplacement broche + étalonnage","En cours validation 25/05","Maintenance préventive broche trimestrielle",null]}
     ]},
-    station:   {rebut:0,ncr:1,reclamations:0,ppm:0,items:[
-      {id:"NCR-STE-01",date:"05/04/2025",title:"Non-conformité rejet",desc:"Valeurs pH effluents hors normes légales",status:"closed",steps:["pH 11.2 mesuré — limite 10.5","Responsable station + Direction","Neutralisation supplémentaire","Dosage réactif mal calibré","Recalibration doseur automatique","Contrôle ONEE validé 20/04","Mesure pH automatique continue",null]}
+    station:{rebut:0,ncr:1,reclamations:0,ppm:0,items:[
+      {id:"NCR-STE-01",date:"05/04/2025",title:"pH effluents hors norme",desc:"pH mesuré 11.2 — limite légale 10.5",status:"closed",steps:["pH 11.2 — dépassement norme ONEE","Responsable station + Direction","Neutralisation supplémentaire appliquée","Dosage réactif mal calibré","Recalibration doseur automatique","Contrôle ONEE validé 20/04","Mesure pH automatique continue","Clôturé 21/04/2025"]}
     ]},
-    accueil:   {rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
-    chef:      {rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
+    accueil:{rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
+    chef:{rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
     infirmerie:{rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
-    reunion:   {rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
+    reunion:{rebut:0,ncr:0,reclamations:0,ppm:0,items:[]},
   },
-  C: {
-    stockage:  {budget:120000,depenses:115000,ecart:-4.2,pertes:2000,items:[]},
-    qc:        {budget:80000,depenses:88000,ecart:10,pertes:5000,items:[
-      {id:"ECT-QC-01",date:"01/04/2025",title:"Dépassement consommables",desc:"Consommables contrôle +10% budget",status:"progress",steps:["Dépassement 8 000 MAD","Responsable QC + Direction","Gel achats non urgents","Casse instruments mesure non prévue","Remplacement planifié + assurance","En cours validation","Budget révision trimestrielle",null]}
+  C:{
+    stockage:{budget:120,depenses:115,ecart:-4.2,pertes:2,items:[]},
+    qc:{budget:80,depenses:88,ecart:10,pertes:5,items:[
+      {id:"ECT-QC-01",date:"01/04/2025",title:"Dépassement consommables",desc:"Consommables contrôle +10k MAD budget",status:"progress",steps:["Dépassement 8 000 MAD","Responsable QC + Direction","Gel achats non urgents","Casse instruments mesure non prévue","Remplacement planifié + assurance","En cours validation","Budget révision trimestrielle",null]}
     ]},
-    magasinier:{budget:50000,depenses:48000,ecart:-4,pertes:0,items:[]},
-    methodes:  {budget:60000,depenses:62000,ecart:3.3,pertes:0,items:[]},
-    atelier:   {budget:350000,depenses:410000,ecart:17.1,pertes:35000,items:[
-      {id:"ECT-ATL-01",date:"28/04/2025",title:"Dépassement EPI",desc:"EPI chimiques urgence non budgétisés",status:"open",steps:["Dépassement 60 000 MAD EPI urgence","Direction + HSE + Finance","Validation dépense exceptionnelle","Accident non prévu nécessitant EPI premium","Révision budget EPI sécurité N+1","En attente clôture accident","EPI budget sécurité augmenté 20%",null]}
+    magasinier:{budget:50,depenses:48,ecart:-4,pertes:0,items:[]},
+    methodes:{budget:60,depenses:62,ecart:3.3,pertes:0,items:[]},
+    atelier:{budget:350,depenses:410,ecart:17.1,pertes:35,items:[
+      {id:"ECT-ATL-01",date:"28/04/2025",title:"Dépassement EPI urgence",desc:"EPI chimiques urgence non budgétisés — +60k MAD",status:"open",steps:["Dépassement 60 000 MAD EPI urgence","Direction + HSE + Finance","Validation dépense exceptionnelle","Accident non prévu — EPI premium requis","Révision budget EPI sécurité N+1","En attente clôture accident","EPI budget sécurité +20% N+1",null]}
     ]},
-    machine:   {budget:200000,depenses:225000,ecart:12.5,pertes:18000,items:[]},
-    station:   {budget:150000,depenses:162000,ecart:8,pertes:8000,items:[]},
-    accueil:   {budget:30000,depenses:29000,ecart:-3.3,pertes:0,items:[]},
-    chef:      {budget:45000,depenses:44000,ecart:-2.2,pertes:0,items:[]},
-    infirmerie:{budget:25000,depenses:28000,ecart:12,pertes:0,items:[]},
-    reunion:   {budget:15000,depenses:13000,ecart:-13.3,pertes:0,items:[]},
+    machine:{budget:200,depenses:225,ecart:12.5,pertes:18,items:[]},
+    station:{budget:150,depenses:162,ecart:8,pertes:8,items:[]},
+    accueil:{budget:30,depenses:29,ecart:-3.3,pertes:0,items:[]},
+    chef:{budget:45,depenses:44,ecart:-2.2,pertes:0,items:[]},
+    infirmerie:{budget:25,depenses:28,ecart:12,pertes:0,items:[]},
+    reunion:{budget:15,depenses:13,ecart:-13.3,pertes:0,items:[]},
   },
-  D: {
-    stockage:  {otd:94,retards:2,service:96,joursRetard:1.5,items:[]},
-    qc:        {otd:88,retards:4,service:90,joursRetard:3.2,items:[
-      {id:"RET-QC-01",date:"10/04/2025",title:"Retard validation lot",desc:"Lot bloqué 5j cause dérive dimensionnelle",status:"progress",steps:["Blocage lot — retard livraison 5j","Chef QC + Commercial","Communication client, délai révisé","Inspection 100% non prévue","Accélération process validation","En cours","Procédure validation accélérée NCR",null]}
+  D:{
+    stockage:{otd:94,retards:2,service:96,jRetard:1.5,items:[]},
+    qc:{otd:88,retards:4,service:90,jRetard:3.2,items:[
+      {id:"RET-QC-01",date:"10/04/2025",title:"Retard validation lot",desc:"Lot bloqué 5j — dérive dimensionnelle",status:"progress",steps:["Blocage lot — retard livraison 5 jours","Chef QC + Commercial","Communication client, délai révisé","Inspection 100% non prévue","Accélération process validation","En cours","Procédure validation accélérée NCR",null]}
     ]},
-    magasinier:{otd:98,retards:0,service:99,joursRetard:0,items:[]},
-    methodes:  {otd:97,retards:1,service:97,joursRetard:1,items:[]},
-    atelier:   {otd:76,retards:8,service:80,joursRetard:5.8,items:[
-      {id:"RET-ATL-01",date:"28/04/2025",title:"Arrêt production",desc:"Arrêt 3 jours accident + non-conformité",status:"open",steps:["Production stoppée 72h","Direction + Chef atelier","Plan de rattrapage + heures sup","Accident + NC cumulés","Reprogrammation planning","En cours suivi","Plan urgence arrêt produite",null]}
+    magasinier:{otd:98,retards:0,service:99,jRetard:0,items:[]},
+    methodes:{otd:97,retards:1,service:97,jRetard:1,items:[]},
+    atelier:{otd:76,retards:8,service:80,jRetard:5.8,items:[
+      {id:"RET-ATL-01",date:"28/04/2025",title:"Arrêt production 72h",desc:"Arrêt 3j — accident + NC cumulés",status:"open",steps:["Production stoppée 72h — client impacté","Direction + Chef atelier","Plan rattrapage + heures supplémentaires","Accident + NC cumulés non anticipés","Reprogrammation planning client","En cours suivi livraisons","Plan urgence arrêt production",null]},
+      {id:"RET-ATL-02",date:"15/04/2025",title:"Retard commande C-4421",desc:"Commande C-4421 retardée 8 jours",status:"progress",steps:["Retard 8 jours commande prioritaire","Commercial + Chef atelier","Client informé — accord délai","Blocage matière non conforme","Approvisionnement alternatif activé","Livraison partielle confirmée 20/05","Procédure appro urgence formalisée",null]}
     ]},
-    machine:   {otd:85,retards:5,service:87,joursRetard:3.5,items:[]},
-    station:   {otd:90,retards:2,service:92,joursRetard:2,items:[]},
-    accueil:   {otd:99,retards:0,service:100,joursRetard:0,items:[]},
-    chef:      {otd:99,retards:0,service:99,joursRetard:0,items:[]},
-    infirmerie:{otd:100,retards:0,service:100,joursRetard:0,items:[]},
-    reunion:   {otd:100,retards:0,service:100,joursRetard:0,items:[]},
+    machine:{otd:85,retards:5,service:87,jRetard:3.5,items:[]},
+    station:{otd:90,retards:2,service:92,jRetard:2,items:[]},
+    accueil:{otd:99,retards:0,service:100,jRetard:0,items:[]},
+    chef:{otd:99,retards:0,service:99,jRetard:0,items:[]},
+    infirmerie:{otd:100,retards:0,service:100,jRetard:0,items:[]},
+    reunion:{otd:100,retards:0,service:100,jRetard:0,items:[]},
   },
-  P: {
-    stockage:  {effectif:12,absenteisme:3.2,formation:24,turnover:8,items:[]},
-    qc:        {effectif:8,absenteisme:2.1,formation:40,turnover:5,items:[]},
+  P:{
+    stockage:{effectif:12,absenteisme:3.2,formation:24,turnover:8,items:[]},
+    qc:{effectif:8,absenteisme:2.1,formation:40,turnover:5,items:[]},
     magasinier:{effectif:3,absenteisme:1.5,formation:16,turnover:0,items:[]},
-    methodes:  {effectif:5,absenteisme:0.8,formation:32,turnover:0,items:[]},
-    atelier:   {effectif:28,absenteisme:6.8,formation:60,turnover:14,items:[
-      {id:"RH-ATL-01",date:"28/04/2025",title:"Arrêt médical accident",desc:"Opératrice en arrêt 5j — brûlure chimique",status:"progress",steps:["Arrêt médical 5j — remplacement assuré","Chef atelier + RH + Médecin","Remplacement poste par opérateur formé","Accident chimique — EPI insuffisants","Formation EPI + suivi médical","Suivi retour travail prévu","Plan prévention mis à jour",null]},
-      {id:"RH-ATL-02",date:"07/04/2025",title:"Formation sécurité",desc:"2 opérateurs non formés LOTO identifiés",status:"closed",steps:["2 opérateurs sans habilitation LOTO","RH + HSE + Chef atelier","Affectation postes sans risque LOTO","Plan formation incomplet","Formation LOTO effectuée","Habilitations délivrées 15/04","Matrice compétences mise à jour","Clôturé 16/04/2025"]}
+    methodes:{effectif:5,absenteisme:0.8,formation:32,turnover:0,items:[]},
+    atelier:{effectif:28,absenteisme:6.8,formation:60,turnover:14,items:[
+      {id:"RH-ATL-01",date:"28/04/2025",title:"Arrêt médical — brûlure",desc:"Opératrice arrêt 5j — brûlure chimique main",status:"progress",steps:["Arrêt médical 5j — remplacement assuré","Chef atelier + RH + Médecin","Remplacement poste opérateur formé","Accident chimique — EPI insuffisants","Formation EPI + suivi médical programmé","Suivi retour travail prévu","Plan prévention chimique mis à jour",null]},
+      {id:"RH-ATL-02",date:"07/04/2025",title:"Formation LOTO manquante",desc:"2 opérateurs sans habilitation LOTO identifiés",status:"closed",steps:["2 opérateurs sans habilitation LOTO","RH + HSE + Chef atelier","Affectation postes sans risque LOTO","Plan formation incomplet","Formation LOTO effectuée 10/04","Habilitations délivrées 15/04","Matrice compétences mise à jour","Clôturé 16/04/2025"]}
     ]},
-    machine:   {effectif:15,absenteisme:4.5,formation:48,turnover:10,items:[
-      {id:"RH-MCH-01",date:"20/04/2025",title:"Arrêt médical fracture",desc:"Opérateur arrêt 21j — fracture doigt",status:"open",steps:["Arrêt 21j minimum — remplacement urgent","RH + Chef prod + Médecin","Intérim formé en cours","Accident CNC — procédure LOTO manquante","Formation LOTO + EPI mécaniques","Suivi médical hebdomadaire","Extension habilitations toute l'équipe",null]}
+    machine:{effectif:15,absenteisme:4.5,formation:48,turnover:10,items:[
+      {id:"RH-MCH-01",date:"20/04/2025",title:"Arrêt médical 21j — fracture",desc:"Opérateur fracture index — presse CNC",status:"open",steps:["Arrêt 21j minimum — intérim urgent","RH + Chef prod + Médecin","Intérim formé en cours de recrutement","Accident CNC — LOTO manquant","Formation LOTO + EPI mécaniques","Suivi médical hebdomadaire","Extension habilitations toute équipe",null]}
     ]},
-    station:   {effectif:6,absenteisme:2.8,formation:20,turnover:5,items:[]},
-    accueil:   {effectif:4,absenteisme:1.2,formation:8,turnover:0,items:[]},
-    chef:      {effectif:2,absenteisme:0.5,formation:16,turnover:0,items:[]},
+    station:{effectif:6,absenteisme:2.8,formation:20,turnover:5,items:[]},
+    accueil:{effectif:4,absenteisme:1.2,formation:8,turnover:0,items:[]},
+    chef:{effectif:2,absenteisme:0.5,formation:16,turnover:0,items:[]},
     infirmerie:{effectif:2,absenteisme:0.3,formation:24,turnover:0,items:[]},
-    reunion:   {effectif:0,absenteisme:0,formation:0,turnover:0,items:[]},
+    reunion:{effectif:0,absenteisme:0,formation:0,turnover:0,items:[]},
   }
 };
 
-// ══════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════
-let currentMod = 'S';
-let currentView = 'plan';
-let currentDeptId = null;
-let currentItemIdx = null;
-let chartInstances = {};
-let chartsBuilt = {};
+// ══ STATE ══
+let mod='S', curView='plan', curDept=null, charts={};
 
-// ══════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('h-date').textContent = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-  switchModule('S', document.querySelector('.sq-tab[data-mod="S"]'));
-  bindDeptClicks();
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('hdate').textContent=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+  setModCSS('S');
+  applyDots();
   updateTabKPIs();
+  bindClicks();
 });
 
-function updateTabKPIs() {
-  // S
-  const sData = DATA.S; let sOpen=0; Object.values(sData).forEach(d=>sOpen+=d.open||0);
-  document.getElementById('kpi-S').textContent = sOpen+' AT';
-  // Q
-  const qData = DATA.Q; let qOpen=0; Object.values(qData).forEach(d=>qOpen+=d.ncr||0);
-  document.getElementById('kpi-Q').textContent = qOpen+' NCR';
-  // C
-  const cData = DATA.C; let cOver=0; Object.values(cData).forEach(d=>{ if((d.ecart||0)>0) cOver++; });
-  document.getElementById('kpi-C').textContent = cOver+' écarts';
-  // D
-  const dData = DATA.D; let dRet=0; Object.values(dData).forEach(d=>dRet+=d.retards||0);
-  document.getElementById('kpi-D').textContent = dRet+' retards';
-  // P
-  const pData = DATA.P; let pAbs=0; Object.values(pData).forEach(d=>pAbs+=d.items?.length||0);
-  document.getElementById('kpi-P').textContent = pAbs+' actifs';
+function setModCSS(m){
+  const M=MODS[m];
+  const r=document.documentElement.style;
+  r.setProperty('--mod',M.color);
+  r.setProperty('--mod-dim',M.dim);
+  r.setProperty('--mod-border',M.border);
+  document.getElementById('logo').style.background=M.color;
+  document.getElementById('htitle').textContent=M.htitle;
 }
 
-// ══════════════════════════════════════════
-// MODULE SWITCH
-// ══════════════════════════════════════════
-function switchModule(mod, tabEl) {
-  currentMod = mod;
-  const m = MODULES[mod];
-
-  // update CSS vars
-  document.documentElement.style.setProperty('--mod', m.color);
-  document.documentElement.style.setProperty('--mod-dim', m.dim);
-  document.documentElement.style.setProperty('--mod-border', m.border);
-
-  // tabs
-  document.querySelectorAll('.sq-tab').forEach(t => t.classList.remove('active'));
-  tabEl.classList.add('active');
-
-  // header
-  document.getElementById('logo-badge').style.background = m.color;
-  document.getElementById('hdr-title').textContent = m.hdrTitle;
-
-  // dots on plan
-  applyModuleDots();
-
-  // rebuild dashboard if visible
-  if (currentView === 'dash') buildDashboard();
-
-  // close panels
-  closeDept(); closeDetail();
+function updateTabKPIs(){
+  Object.keys(MODS).forEach(m=>{
+    document.getElementById('k'+m).textContent=MODS[m].kpi(DATA[m]);
+  });
 }
 
-function applyModuleDots() {
-  const mod = currentMod;
-  const data = DATA[mod];
-  const mk = MODULES[mod].metricKeys;
-
-  DEPTS_BASE.forEach(dept => {
-    const d = data[dept.id];
-    const els = document.querySelectorAll(`.dept[data-id="${dept.id}"]`);
-    els.forEach(el => {
+function applyDots(){
+  const M=MODS[mod]; const data=DATA[mod];
+  DBASE.forEach(dept=>{
+    const d=data[dept.id]||{};
+    const lv=M.dot(d);
+    document.querySelectorAll(`.fp-dept[data-id="${dept.id}"]`).forEach(el=>{
       el.classList.remove('lv-ok','lv-warn','lv-bad');
-      if (!d) return;
-      let level = 'lv-ok';
-      if (mod==='S') level = d.open>0?'lv-bad':d.accidents>0?'lv-warn':'lv-ok';
-      else if (mod==='Q') level = d.ncr>3?'lv-bad':d.ncr>0?'lv-warn':'lv-ok';
-      else if (mod==='C') level = d.ecart>10?'lv-bad':d.ecart>0?'lv-warn':'lv-ok';
-      else if (mod==='D') level = d.otd<80?'lv-bad':d.otd<90?'lv-warn':'lv-ok';
-      else if (mod==='P') level = d.absenteisme>5?'lv-bad':d.absenteisme>2?'lv-warn':'lv-ok';
-      el.classList.add(level);
+      el.classList.add(lv);
     });
   });
 }
 
-// ══════════════════════════════════════════
-// VIEW SWITCH
-// ══════════════════════════════════════════
-function switchView(v, btn) {
-  currentView = v;
-  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.vt-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById('view-'+v).classList.add('active');
+function bindClicks(){
+  document.querySelectorAll('.fp-dept[data-id]').forEach(el=>{
+    el.addEventListener('click',()=>openDept(el.dataset.id));
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openDept(el.dataset.id);}});
+  });
+}
+
+function switchMod(m,el){
+  mod=m;
+  setModCSS(m);
+  document.querySelectorAll('.sqt').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  applyDots();
+  closeDept(); closeDet();
+  if(curView==='dash') buildDash();
+}
+
+function switchView(v,btn){
+  curView=v;
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.vt').forEach(el=>el.classList.remove('active'));
+  document.getElementById('v'+v).classList.add('active');
   btn.classList.add('active');
-  if (v === 'dash') buildDashboard();
+  if(v==='dash') buildDash();
 }
 
-// ══════════════════════════════════════════
-// DEPT PANEL
-// ══════════════════════════════════════════
-function bindDeptClicks() {
-  document.querySelectorAll('.dept[data-id]').forEach(el => {
-    el.addEventListener('click', () => openDept(el.getAttribute('data-id')));
-    el.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){e.preventDefault();openDept(el.getAttribute('data-id'));}});
-  });
-}
-
-function openDept(id) {
-  currentDeptId = id;
-  const mod = currentMod;
-  const m = MODULES[mod];
-  const dept = DEPTS_BASE.find(d=>d.id===id);
-  const d = DATA[mod][id] || {};
-  const items = d.items || [];
-
-  document.querySelectorAll('.dept').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll(`.dept[data-id="${id}"]`).forEach(el=>el.classList.add('active'));
-
-  // mod tag
-  const tag = document.getElementById('dp-mod-tag');
-  tag.textContent = mod + ' — ' + m.label.toUpperCase();
-  tag.style.background = m.dim; tag.style.color = m.color; tag.style.border = '1px solid '+m.border;
-
-  document.getElementById('dp-name').textContent = dept?.name || id;
-  document.getElementById('dp-zone').textContent = dept?.zone || '';
-  document.getElementById('dp-cnt').textContent = items.length;
-
-  // metrics
-  const mVals = [d[m.metricKeys[0]],d[m.metricKeys[1]],d[m.metricKeys[2]],d[m.metricKeys[3]]];
-  document.getElementById('dp-metrics').innerHTML = m.metrics.map((lbl,i) =>
-    `<div class="p-metric"><div class="p-mlbl">${lbl}</div><div class="p-mval ${m.metricColors[i]}">${mVals[i]??'—'}</div></div>`
+function openDept(id){
+  curDept=id;
+  const M=MODS[mod]; const data=DATA[mod][id]||{}; const dept=DBASE.find(d=>d.id===id);
+  document.querySelectorAll('.fp-dept').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll(`.fp-dept[data-id="${id}"]`).forEach(el=>el.classList.add('sel'));
+  const tag=document.getElementById('dp-tag');
+  tag.textContent=mod+' — '+M.label.toUpperCase();
+  tag.style.cssText=`background:${M.dim};color:${M.color};border:1px solid ${M.border}`;
+  document.getElementById('dp-name').textContent=dept?.name||id;
+  document.getElementById('dp-zone').textContent=dept?.zone||'';
+  const items=data.items||[];
+  document.getElementById('dp-cnt').textContent=items.length;
+  document.getElementById('dp-metrics').innerHTML=M.metrics.map((lbl,i)=>
+    `<div class="pmc"><div class="pml">${lbl}</div><div class="pmv ${M.mc[i]}">${data[M.mk[i]]??'—'}</div></div>`
   ).join('');
-
-  // items
-  document.getElementById('dp-items').innerHTML = items.length === 0
-    ? `<div class="no-item">✓ Aucun enregistrement</div>`
-    : items.map((item,idx) => `
-        <div class="item-row" onclick="openDetail(${idx})">
-          <div class="item-date">${item.date}</div>
-          <div class="item-b">
-            <div class="item-title">${item.title} <span style="opacity:.5;font-size:9px;font-family:var(--fm)">${item.id}</span></div>
-            <div class="item-desc">${item.desc}</div>
-            <span class="badge ${item.status==='open'?'b-open':item.status==='closed'?'b-closed':'b-prog'}">${item.status==='open'?'Ouvert':item.status==='closed'?'Clôturé':'En cours'}</span>
-          </div>
-          <div class="item-arrow">›</div>
-        </div>`).join('');
-
-  document.getElementById('dept-overlay').classList.add('open');
+  document.getElementById('dp-items').innerHTML=items.length===0
+    ?'<div class="noitem">✓ Aucun enregistrement</div>'
+    :items.map((it,i)=>`
+      <div class="irow" onclick="openDet(${i})">
+        <div class="idate">${it.date}</div>
+        <div class="ib">
+          <div class="ititle">${it.title} <span style="opacity:.45;font-size:9px;font-family:var(--fm)">${it.id}</span></div>
+          <div class="idesc">${it.desc}</div>
+          <span class="badge ${it.status==='open'?'bo':it.status==='closed'?'bc':'bp'}">${it.status==='open'?'Ouvert':it.status==='closed'?'Clôturé':'En cours'}</span>
+        </div>
+        <div class="iarr">›</div>
+      </div>`).join('');
+  document.getElementById('ov-dept').classList.add('open');
+}
+function closeDept(){
+  document.getElementById('ov-dept').classList.remove('open');
+  document.querySelectorAll('.fp-dept').forEach(el=>el.classList.remove('sel'));
+  curDept=null;
 }
 
-function closeDept() {
-  document.getElementById('dept-overlay').classList.remove('open');
-  document.querySelectorAll('.dept').forEach(el=>el.classList.remove('active'));
-  currentDeptId = null;
-}
-
-// ══════════════════════════════════════════
-// DETAIL (8D / NCR / etc.) PANEL
-// ══════════════════════════════════════════
-function openDetail(idx) {
-  currentItemIdx = idx;
-  const mod = currentMod;
-  const m = MODULES[mod];
-  const d = DATA[mod][currentDeptId];
-  const item = d.items[idx];
-  const dept = DEPTS_BASE.find(x=>x.id===currentDeptId);
-
-  document.getElementById('det-title').textContent = item.title;
-  document.getElementById('det-sub').textContent = `${dept?.name} · ${item.date} · ${item.id}`;
-  document.getElementById('det-status').innerHTML = `<span class="badge ${item.status==='open'?'b-open':item.status==='closed'?'b-closed':'b-prog'}" style="font-size:11px;padding:3px 11px">${item.status==='open'?'Ouvert':item.status==='closed'?'Clôturé':'En cours'}</span>`;
-
-  const steps = m.detailSteps;
-  document.getElementById('det-body').innerHTML = steps.map((sTitle, i) => {
-    const val = item.steps?.[i];
-    const isDone = !!val && item.status==='closed';
-    const isPending = !val;
-    return `<div class="d-step">
-      <div class="d-sh">
-        <div class="d-num ${isDone?'done':isPending?'pending':''}">${i+1}</div>
-        <div class="d-stitle">${sTitle}</div>
-        <div class="d-ssub ${isDone?'done':isPending?'':'prog'}">${isDone?'✓ Fait':isPending?'En attente':'En cours'}</div>
-      </div>
-      <div class="d-sb ${isPending?'empty':''}">${val || 'Non renseigné — à compléter dans Google Sheet'}</div>
-    </div>`;
+function openDet(idx){
+  const M=MODS[mod]; const data=DATA[mod][curDept]; const it=data.items[idx];
+  const dept=DBASE.find(d=>d.id===curDept);
+  document.getElementById('det-title').textContent=it.title;
+  document.getElementById('det-sub').textContent=`${dept?.name} · ${it.date} · ${it.id}`;
+  document.getElementById('det-status').innerHTML=`<span class="badge ${it.status==='open'?'bo':it.status==='closed'?'bc':'bp'}" style="font-size:10px;padding:3px 10px">${it.status==='open'?'Ouvert':it.status==='closed'?'Clôturé':'En cours'}</span>`;
+  document.getElementById('det-body').innerHTML=M.steps.map((st,i)=>{
+    const v=it.steps?.[i]; const done=!!v&&it.status==='closed'; const pend=!v;
+    return`<div class="dstep"><div class="dsh"><div class="dnum ${done?'ok':pend?'pend':''}">${i+1}</div><div class="dst">${st}</div><div class="dss ${done?'ok':pend?'':'pr'}">${done?'✓ Fait':pend?'En attente':'En cours'}</div></div><div class="dsb ${pend?'em':''}">${v||'Non renseigné — à compléter dans Google Sheet'}</div></div>`;
   }).join('');
-
-  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('ov-det').classList.add('open');
 }
+function closeDet(){ document.getElementById('ov-det').classList.remove('open'); }
+function openSheet(){ window.open(SHEET_URL,'_blank'); }
 
-function closeDetail() { document.getElementById('detail-overlay').classList.remove('open'); }
-function backToDepet() { closeDetail(); }
-function openSheet() { window.open(CONFIG.SHEET_URL,'_blank'); }
-
-// ══════════════════════════════════════════
-// DASHBOARD
-// ══════════════════════════════════════════
-function buildDashboard() {
-  const mod = currentMod;
-  const m = MODULES[mod];
-  const data = DATA[mod];
-  const vals = DEPTS_BASE.map(d => data[d.id] || {});
-  const names = DEPTS_BASE.map(d => d.name.length>13?d.name.slice(0,13)+'…':d.name);
-
-  // destroy old charts
-  ['pie-chart','line-chart','bar-chart'].forEach(id => {
-    if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
-  });
-
+function buildDash(){
+  const M=MODS[mod]; const data=DATA[mod];
+  const vals=DBASE.map(d=>data[d.id]||{});
+  const names=DBASE.map(d=>d.name.length>13?d.name.slice(0,13)+'…':d.name);
+  ['cpie','cline','cbar'].forEach(id=>{if(charts[id]){charts[id].destroy();delete charts[id];}});
   // KPIs
-  const mk = m.metricKeys;
-  const kpiVals = mk.map(k => {
-    let total = 0;
-    vals.forEach(v => { if(v[k]!==undefined) total += v[k]; });
-    return Math.round(total*10)/10;
-  });
-  document.getElementById('kpi-row').innerHTML = m.metrics.map((lbl,i) =>
-    `<div class="kpi"><div class="kpi-lbl">${lbl}</div><div class="kpi-val ${m.metricColors[i]}">${kpiVals[i]}</div><div class="kpi-sub">total</div></div>`
-  ).join('') + `<div class="kpi"><div class="kpi-lbl">Départements</div><div class="kpi-val cb">${DEPTS_BASE.length}</div><div class="kpi-sub">analysés</div></div>`;
-
+  const kpis=M.mk.map(k=>Math.round(vals.reduce((s,v)=>s+(v[k]||0),0)*10)/10);
+  document.getElementById('kr').innerHTML=M.metrics.map((lbl,i)=>
+    `<div class="kc"><div class="kl">${lbl}</div><div class="kv ${M.mc[i]}">${kpis[i]}</div><div class="ks">total</div></div>`
+  ).join('')+`<div class="kc"><div class="kl">Départements</div><div class="kv cb">${DBASE.length}</div><div class="ks">analysés</div></div>`;
   // titles
-  document.getElementById('chart1-title').textContent = m.chart1;
-  document.getElementById('chart2-title').textContent = m.chart2;
-  document.getElementById('chart3-title').textContent = m.chart3;
-  document.getElementById('chart4-title').textContent = m.chart4;
-
-  // Pareto (items count)
-  const paretoData = DEPTS_BASE.map((dept,i) => ({name:dept.name, val:(data[dept.id]?.items?.length||0)}))
-    .filter(x=>x.val>0).sort((a,b)=>b.val-a.val);
-  const mx = paretoData[0]?.val||1;
-  document.getElementById('pareto-chart').innerHTML = paretoData.length===0
-    ? '<div style="text-align:center;padding:1.5rem;color:var(--text3);font-family:var(--fm);font-size:11px">Aucune donnée</div>'
-    : paretoData.map(x=>`<div class="pareto-row"><div class="p-lbl">${x.name.length>16?x.name.slice(0,16)+'…':x.name}</div><div class="p-bg"><div class="p-fill" style="width:${Math.round(x.val/mx*100)}%"></div></div><div class="p-n">${x.val}</div></div>`).join('');
-
-  // Pie chart — items by type / status
-  let openC=0,progC=0,closedC=0;
-  vals.forEach(v=>(v.items||[]).forEach(i=>{
-    if(i.status==='open') openC++;
-    else if(i.status==='progress') progC++;
-    else closedC++;
-  }));
-  chartInstances['pie-chart'] = new Chart(document.getElementById('pie-chart'),{
-    type:'doughnut',
-    data:{labels:['Ouverts','En cours','Clôturés'],datasets:[{data:[openC,progC,closedC],backgroundColor:['#f05252','#f5a623','#22c97a'],borderWidth:0,hoverOffset:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b93a8',font:{size:10},boxWidth:10,padding:8}}}}
-  });
-
-  // Line chart — evolution (dummy months)
+  document.getElementById('ct1').textContent=M.label+' — pareto par département';
+  document.getElementById('ct2').textContent='Statuts enregistrements';
+  document.getElementById('ct3').textContent='Évolution mensuelle 2025';
+  document.getElementById('ct4').textContent=M.metrics[0]+' par département';
+  // Pareto
+  const pd=DBASE.map(d=>({name:d.name,n:(data[d.id]?.items?.length||0)})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n);
+  const mx=pd[0]?.n||1;
+  document.getElementById('pareto').innerHTML=pd.length===0?'<div class="noitem">Aucune donnée</div>':pd.map(x=>`<div class="prow"><div class="plbl">${x.name.length>16?x.name.slice(0,16)+'…':x.name}</div><div class="pbg"><div class="pfill" style="width:${Math.round(x.n/mx*100)}%"></div></div><div class="pn">${x.n}</div></div>`).join('');
+  // Pie
+  let op=0,pr=0,cl=0;
+  vals.forEach(v=>(v.items||[]).forEach(i=>{if(i.status==='open')op++;else if(i.status==='progress')pr++;else cl++;}));
+  charts['cpie']=new Chart(document.getElementById('cpie'),{type:'doughnut',data:{labels:['Ouverts','En cours','Clôturés'],datasets:[{data:[op,pr,cl],backgroundColor:['#f05252','#f5a623','#22c97a'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b93a8',font:{size:10},boxWidth:10,padding:8}}}}});
+  // Line
   const months=['Jan','Fév','Mar','Avr','Mai','Jun'];
-  const firstKey = mk[0];
-  const lineData = months.map((_,i)=>Math.round(kpiVals[0]*(0.6+i*0.08+Math.random()*0.1)*10)/10);
-  chartInstances['line-chart'] = new Chart(document.getElementById('line-chart'),{
-    type:'line',
-    data:{labels:months,datasets:[{label:m.metrics[0],data:lineData,borderColor:m.color,backgroundColor:m.dim,tension:.4,fill:true,pointBackgroundColor:m.color,pointRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.04)'}}}}
-  });
-
-  // Bar chart — main metric per dept
-  const barVals = DEPTS_BASE.map(d=>(data[d.id]?.[mk[0]])||0);
-  chartInstances['bar-chart'] = new Chart(document.getElementById('bar-chart'),{
-    type:'bar',
-    data:{labels:names,datasets:[{data:barVals,backgroundColor:barVals.map(v=>v===0?'#22c97a':m.color),borderRadius:4,borderWidth:0}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8b93a8',font:{size:10}},grid:{display:false}}}}
-  });
-
+  const base=kpis[0]||1;
+  charts['cline']=new Chart(document.getElementById('cline'),{type:'line',data:{labels:months,datasets:[{label:M.metrics[0],data:months.map((_,i)=>Math.max(0,Math.round((base*(0.55+i*0.09+Math.random()*0.08))*10)/10)),borderColor:M.color,backgroundColor:M.dim,tension:.4,fill:true,pointBackgroundColor:M.color,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+  // Bar
+  const bv=DBASE.map(d=>(data[d.id]?.[M.mk[0]])||0);
+  charts['cbar']=new Chart(document.getElementById('cbar'),{type:'bar',data:{labels:names,datasets:[{data:bv,backgroundColor:bv.map(v=>v===0?'#22c97a':M.color),borderRadius:4,borderWidth:0}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8b93a8',font:{size:10}},grid:{display:false}}}}});
   // Table
-  const tblCols = m.tblCols;
-  const tblKeys = m.tblKeys;
-  document.getElementById('dept-tbl').innerHTML = `
-    <thead><tr><th>Département</th>${tblCols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-    <tbody>${DEPTS_BASE.map(dept=>{
-      const dv = data[dept.id]||{};
-      const cells = tblKeys.map(k=>`<td><span class="tv ${getColor(mod,k,dv[k])}">${dv[k]??'—'}</span></td>`).join('');
-      const items = dv.items||[];
-      const hasOpen = items.some(i=>i.status==='open');
-      const hasProgress = items.some(i=>i.status==='progress');
-      const statCls = hasOpen?'b-open':hasProgress?'b-prog':'b-closed';
-      const statLabel = hasOpen?'Critique':hasProgress?'En cours':'OK';
-      return `<tr><td>${dept.name}</td>${cells}<td><span class="badge ${statCls}">${statLabel}</span></td></tr>`;
-    }).join('')}</tbody>`;
-}
-
-function getColor(mod, key, val) {
-  if(val===undefined||val===null) return '';
-  if(mod==='S'){if(key==='open') return val>0?'cr':'cg'; if(key==='accidents') return val>5?'cr':val>0?'ca':'cg';}
-  if(mod==='Q'){if(key==='ncr') return val>3?'cr':val>0?'ca':'cg'; if(key==='rebut') return val>3?'cr':val>1?'ca':'cg';}
-  if(mod==='C'){if(key==='ecart') return val>10?'cr':val>0?'ca':'cg';}
-  if(mod==='D'){if(key==='otd') return val<80?'cr':val<90?'ca':'cg'; if(key==='retards') return val>5?'cr':val>0?'ca':'cg';}
-  if(mod==='P'){if(key==='absenteisme') return val>5?'cr':val>2?'ca':'cg';}
-  return '';
+  document.getElementById('dtbl').innerHTML=`<thead><tr><th>Département</th>${M.tblC.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${DBASE.map(dept=>{
+    const dv=data[dept.id]||{};
+    const cells=M.tblK.map(k=>{
+      const v=dv[k]??'—';
+      let cls='';
+      if(mod==='S'){if(k==='open')cls=v>0?'cr':'cg';if(k==='accidents')cls=v>5?'cr':v>0?'ca':'cg';}
+      if(mod==='Q'){if(k==='ncr')cls=v>3?'cr':v>0?'ca':'cg';if(k==='rebut')cls=v>3?'cr':v>1?'ca':'cg';}
+      if(mod==='C'){if(k==='ecart')cls=v>10?'cr':v>0?'ca':'cg';}
+      if(mod==='D'){if(k==='otd')cls=v<80?'cr':v<90?'ca':'cg';if(k==='retards')cls=v>5?'cr':v>0?'ca':'cg';}
+      if(mod==='P'){if(k==='absenteisme')cls=v>5?'cr':v>2?'ca':'cg';}
+      return`<td><span class="tv ${cls}">${v}</span></td>`;
+    }).join('');
+    const its=dv.items||[];const hasO=its.some(i=>i.status==='open');const hasP=its.some(i=>i.status==='progress');
+    return`<tr><td>${dept.name}</td>${cells}<td><span class="badge ${hasO?'bo':hasP?'bp':'bc'}">${hasO?'Critique':hasP?'En cours':'OK'}</span></td></tr>`;
+  }).join('')}</tbody>`;
 }
 </script>
 </body>
