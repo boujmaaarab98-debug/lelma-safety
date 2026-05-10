@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;--bg4:#242d42;
+  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
   --text:#e8eaf0;--text2:#8b93a8;--text3:#4a5268;
   --accent:#3d7fff;--accent-dim:rgba(61,127,255,0.15);
@@ -16,15 +16,22 @@
   --amber:#f5a623;--amber-dim:rgba(245,166,35,0.12);
   --red:#f05252;--red-dim:rgba(240,82,82,0.12);
   --fh:'Syne',sans-serif;--fm:'DM Mono',monospace;
+  --hdr:52px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fh);overflow:hidden;}
+html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:var(--fh);overflow:hidden;}
 
-/* HEADER */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:52px;background:var(--bg2);border-bottom:1px solid var(--border);gap:1rem;flex-shrink:0;}
+/* ── HEADER ── */
+.hdr{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;height:var(--hdr);
+  background:rgba(15,17,23,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
 .hdr-l{display:flex;align-items:center;gap:.85rem;}
 .logo{font-family:var(--fm);font-size:11px;font-weight:500;letter-spacing:.15em;background:var(--accent);color:#fff;padding:3px 10px;border-radius:4px;}
-.hdr h1{font-size:14px;font-weight:700;letter-spacing:.02em;}
+.hdr h1{font-size:14px;font-weight:700;}
 .hdr-sub{font-family:var(--fm);font-size:9px;color:var(--text3);}
 .hdr-r{display:flex;align-items:center;gap:.6rem;}
 .pill{font-family:var(--fm);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);}
@@ -35,103 +42,181 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .nav-btn.active{background:var(--bg2);color:var(--text);border:1px solid var(--border2);}
 .nav-btn:hover:not(.active){color:var(--text);}
 
-/* VIEWS */
-.view{display:none;height:calc(100vh - 52px);}
-.view.active{display:flex;flex-direction:column;}
+/* ── VIEWS ── */
+.view{position:fixed;top:var(--hdr);left:0;right:0;bottom:0;display:none;}
+.view.active{display:block;}
 
-/* ══ PLAN VIEW ══ */
-#view-plan{position:relative;overflow:hidden;}
-.plan-wrap{flex:1;padding:1rem;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-#floorplan{width:100%;height:100%;max-height:calc(100vh - 120px);}
+/* ══════════════════════
+   PLAN VIEW — full screen
+══════════════════════ */
+#view-plan{background:var(--bg);}
 
-/* SVG styles */
-.outer-wall{fill:none;stroke:rgba(255,255,255,0.18);stroke-width:2;}
-.corridor{fill:rgba(34,201,122,0.07);stroke:rgba(34,201,122,0.18);stroke-width:.5;}
-.dept rect{fill:rgba(255,255,255,0.03);stroke:rgba(255,255,255,0.1);stroke-width:1;transition:fill .18s,stroke .18s;}
+.plan-full{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem 1.5rem 2.5rem;
+}
+
+#floorplan{
+  width:100%;height:100%;
+  display:block;
+}
+
+/* SVG */
+.outer-wall{fill:none;stroke:rgba(255,255,255,0.2);stroke-width:2.5;}
+.corridor{fill:rgba(34,201,122,0.08);stroke:rgba(34,201,122,0.2);stroke-width:.8;}
+.dept rect{fill:rgba(255,255,255,0.03);stroke:rgba(255,255,255,0.11);stroke-width:1.2;transition:fill .18s,stroke .18s;}
 .dept.static rect{cursor:default;}
 .dept:not(.static){cursor:pointer;}
-.dept:not(.static):hover rect{fill:rgba(61,127,255,0.12);stroke:var(--accent);}
-.dept.active rect{fill:rgba(61,127,255,0.22);stroke:var(--accent);stroke-width:2;}
+.dept:not(.static):hover rect{fill:rgba(61,127,255,0.13);stroke:var(--accent);stroke-width:1.8;}
+.dept.active rect{fill:rgba(61,127,255,0.2);stroke:var(--accent);stroke-width:2.5;}
 .dept-dot{fill:var(--text3);transition:fill .2s;}
 .dept.s-green .dept-dot{fill:var(--green);}
 .dept.s-amber .dept-dot{fill:var(--amber);}
 .dept.s-red   .dept-dot{fill:var(--red);}
-.dt{fill:var(--text);font-size:9px;font-family:'Syne',sans-serif;font-weight:500;text-anchor:middle;pointer-events:none;}
-.ds{fill:var(--text2);font-size:7.5px;font-family:'DM Mono',monospace;text-anchor:middle;pointer-events:none;}
-.ds2{fill:var(--text3);font-size:6.5px;font-family:'DM Mono',monospace;text-anchor:middle;pointer-events:none;}
+.dt{fill:var(--text);font-family:'Syne',sans-serif;font-weight:500;text-anchor:middle;pointer-events:none;}
+.ds{fill:var(--text2);font-family:'DM Mono',monospace;text-anchor:middle;pointer-events:none;}
+.ds2{fill:var(--text3);font-family:'DM Mono',monospace;text-anchor:middle;pointer-events:none;}
 .exit-mk{fill:var(--red);}
-.north-lbl{fill:var(--text3);font-size:11px;font-family:'Syne',sans-serif;font-weight:700;text-anchor:middle;}
+.north-lbl{fill:var(--text3);font-family:'Syne',sans-serif;font-weight:700;text-anchor:middle;}
 
-.plan-legend{display:flex;gap:1.2rem;padding:.5rem 1rem;border-top:1px solid var(--border);flex-shrink:0;}
-.leg-i{display:flex;align-items:center;gap:5px;font-family:var(--fm);font-size:10px;color:var(--text3);}
-.leg-dot{width:8px;height:8px;border-radius:50%;}
-.leg-dot.g{background:var(--green);}.leg-dot.a{background:var(--amber);}.leg-dot.r{background:var(--red);}
-.leg-arr{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:9px solid var(--red);}
+/* legend */
+.plan-legend{
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;gap:1.5rem;align-items:center;justify-content:center;
+  padding:.5rem 1rem;
+  background:rgba(15,17,23,0.7);backdrop-filter:blur(8px);
+  border-top:1px solid var(--border);
+}
+.leg-i{display:flex;align-items:center;gap:5px;font-family:var(--fm);font-size:11px;color:var(--text3);}
+.leg-dot{width:9px;height:9px;border-radius:50%;}
+.leg-dot.g{background:var(--green);}
+.leg-dot.a{background:var(--amber);}
+.leg-dot.r{background:var(--red);}
+.leg-arr{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid var(--red);}
 
-/* MODAL */
-.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;}
-.modal-bg.open{opacity:1;pointer-events:all;}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:min(660px,95vw);max-height:85vh;overflow-y:auto;transform:translateY(20px) scale(.97);transition:transform .22s;}
-.modal-bg.open .modal{transform:none;}
-.modal::-webkit-scrollbar{width:4px;}
-.modal::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-.m-head{display:flex;align-items:flex-start;justify-content:space-between;padding:1.4rem 1.5rem .5rem;gap:1rem;}
-.m-head h2{font-size:19px;font-weight:700;line-height:1.3;}
-.m-zone{font-family:var(--fm);font-size:10px;color:var(--text3);margin-top:3px;}
-.m-close{background:none;border:1px solid var(--border);color:var(--text2);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.m-close:hover{background:var(--bg3);}
-.m-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:.8rem 1.5rem;}
-.m-metric{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem;}
-.m-mlbl{font-family:var(--fm);font-size:9px;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;margin-bottom:4px;}
-.m-mval{font-size:26px;font-weight:700;color:var(--text2);line-height:1;}
-.m-mval.cr{color:var(--red);}.m-mval.ca{color:var(--amber);}.m-mval.cg{color:var(--green);}
-.m-body{padding:0 1.5rem 1rem;}
-.m-sec{font-family:var(--fm);font-size:10px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:.7rem;display:flex;align-items:center;justify-content:space-between;}
-.m-cnt{background:var(--bg3);border:1px solid var(--border);padding:2px 9px;border-radius:10px;color:var(--text2);}
-.inc-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+/* ══════════════════════
+   MODAL — full screen slide
+══════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;z-index:200;
+  display:flex;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .25s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+
+/* dark left side — click to close */
+.modal-backdrop{
+  flex:1;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(3px);
+  cursor:pointer;
+}
+
+/* right panel slides in */
+.modal-panel{
+  width:min(560px,50vw);
+  height:100%;
+  background:var(--bg2);
+  border-left:1px solid var(--border2);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.modal-overlay.open .modal-panel{transform:translateX(0);}
+
+.mp-head{
+  padding:1.4rem 1.6rem 1rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
+  flex-shrink:0;
+}
+.mp-head h2{font-size:20px;font-weight:700;line-height:1.25;color:var(--text);}
+.mp-zone{font-family:var(--fm);font-size:10px;color:var(--text3);margin-top:4px;}
+.mp-close{
+  background:none;border:1px solid var(--border2);color:var(--text2);
+  width:32px;height:32px;border-radius:8px;cursor:pointer;
+  font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.mp-close:hover{background:var(--bg3);color:var(--text);}
+
+.mp-metrics{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+  padding:1rem 1.6rem;flex-shrink:0;
+}
+.mp-metric{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;}
+.mp-mlbl{font-family:var(--fm);font-size:9px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:6px;}
+.mp-mval{font-size:32px;font-weight:700;line-height:1;color:var(--text2);}
+.mp-mval.cr{color:var(--red);}
+.mp-mval.ca{color:var(--amber);}
+.mp-mval.cg{color:var(--green);}
+
+.mp-body{flex:1;overflow-y:auto;padding:0 1.6rem 1rem;}
+.mp-body::-webkit-scrollbar{width:3px;}
+.mp-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+.mp-sec{
+  font-family:var(--fm);font-size:10px;letter-spacing:.07em;
+  color:var(--text3);text-transform:uppercase;
+  margin-bottom:.8rem;margin-top:.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.mp-cnt{background:var(--bg3);border:1px solid var(--border);padding:2px 9px;border-radius:10px;color:var(--text2);}
+
+.inc-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
 .inc-row:last-child{border-bottom:none;}
-.inc-date{font-family:var(--fm);font-size:9px;color:var(--text3);min-width:72px;padding-top:2px;}
+.inc-date{font-family:var(--fm);font-size:10px;color:var(--text3);min-width:76px;padding-top:1px;}
 .inc-b{flex:1;}
-.inc-type{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;}
-.inc-desc{font-size:11px;color:var(--text2);margin-bottom:3px;}
-.inc-act{font-family:var(--fm);font-size:10px;color:var(--text3);}
-.badge{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:.05em;padding:2px 8px;border-radius:10px;margin-top:5px;text-transform:uppercase;}
+.inc-type{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.inc-desc{font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.5;}
+.inc-act{font-family:var(--fm);font-size:10px;color:var(--text3);line-height:1.5;}
+.badge{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:.05em;padding:3px 9px;border-radius:10px;margin-top:6px;text-transform:uppercase;}
 .b-open{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,82,82,.25);}
 .b-closed{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,201,122,.25);}
 .b-prog{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,166,35,.25);}
-.no-inc{text-align:center;padding:1.5rem;color:var(--text3);font-family:var(--fm);font-size:12px;}
-.m-actions{display:flex;gap:8px;padding:.5rem 1.5rem 1.4rem;}
-.m-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:7px;font-family:var(--fh);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:.15s;}
-.m-btn:hover{background:rgba(255,255,255,.06);color:var(--text);}
-.m-btn.prim{background:var(--accent-dim);border-color:rgba(61,127,255,.3);color:#7aaeff;}
-.m-btn.prim:hover{background:rgba(61,127,255,.25);color:#fff;}
+.no-inc{text-align:center;padding:2rem;color:var(--text3);font-family:var(--fm);font-size:12px;}
 
-/* ══ DASHBOARD VIEW ══ */
-#view-dash{overflow-y:auto;padding:1.1rem;gap:.85rem;flex-direction:column;}
+.mp-actions{
+  display:flex;gap:10px;padding:1rem 1.6rem;
+  border-top:1px solid var(--border);flex-shrink:0;
+}
+.mp-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:8px;font-family:var(--fh);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:.15s;}
+.mp-btn:hover{background:rgba(255,255,255,.06);color:var(--text);}
+.mp-btn.prim{background:var(--accent-dim);border-color:rgba(61,127,255,.3);color:#7aaeff;}
+.mp-btn.prim:hover{background:rgba(61,127,255,.25);color:#fff;}
+
+/* ══════════════════════
+   DASHBOARD VIEW
+══════════════════════ */
+#view-dash{overflow-y:auto;padding:1.2rem;display:none;flex-direction:column;gap:.85rem;}
+#view-dash.active{display:flex;}
 #view-dash::-webkit-scrollbar{width:4px;}
 #view-dash::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem;}
-.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;}
 .kpi-lbl{font-family:var(--fm);font-size:9px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:5px;}
-.kpi-val{font-size:28px;font-weight:700;line-height:1;}
+.kpi-val{font-size:30px;font-weight:700;line-height:1;}
 .kpi-val.cr{color:var(--red);}.kpi-val.ca{color:var(--amber);}.kpi-val.cg{color:var(--green);}.kpi-val.cb{color:var(--accent);}
 .kpi-sub{font-family:var(--fm);font-size:9px;color:var(--text3);margin-top:3px;}
-.dash-row{display:grid;gap:.7rem;}
+.dash-row{display:grid;gap:.75rem;}
 .dash-row.two{grid-template-columns:1fr 1fr;}
-.dash-row.three{grid-template-columns:1.2fr 1fr 1fr;}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;}
-.card-title{font-family:var(--fm);font-size:10px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:.85rem;}
-.chart-wrap{position:relative;height:190px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;}
+.card-title{font-family:var(--fm);font-size:10px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:.9rem;}
+.chart-wrap{position:relative;height:200px;}
 .pareto-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
 .pareto-row:last-child{margin-bottom:0;}
-.pareto-lbl{font-size:11px;color:var(--text2);min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pareto-bg{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;}
-.pareto-fill{height:100%;border-radius:4px;transition:width .5s;}
-.pareto-fill.r{background:var(--red);}.pareto-fill.a{background:var(--amber);}.pareto-fill.c{background:var(--accent);}
-.pareto-n{font-family:var(--fm);font-size:10px;color:var(--text3);min-width:20px;text-align:right;}
+.p-lbl{font-size:11px;color:var(--text2);min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p-bg{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.p-fill{height:100%;border-radius:4px;transition:width .5s;}
+.p-fill.r{background:var(--red);}.p-fill.a{background:var(--amber);}.p-fill.c{background:var(--accent);}
+.p-n{font-family:var(--fm);font-size:10px;color:var(--text3);min-width:20px;text-align:right;}
 .dept-tbl{width:100%;border-collapse:collapse;font-size:11px;}
 .dept-tbl th{font-family:var(--fm);font-size:9px;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;padding:0 6px 8px;text-align:left;border-bottom:1px solid var(--border);}
-.dept-tbl td{padding:7px 6px;border-bottom:1px solid var(--border);color:var(--text2);}
+.dept-tbl td{padding:8px 6px;border-bottom:1px solid var(--border);color:var(--text2);}
 .dept-tbl tr:last-child td{border-bottom:none;}
 .dept-tbl td:first-child{color:var(--text);font-weight:500;}
 .tv{font-family:var(--fm);font-size:12px;font-weight:500;}
@@ -140,6 +225,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </head>
 <body>
 
+<!-- HEADER -->
 <header class="hdr">
   <div class="hdr-l">
     <span class="logo">LELMA</span>
@@ -158,63 +244,109 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
 <!-- ══ VIEW: PLAN ══ -->
 <div id="view-plan" class="view active">
-  <div class="plan-wrap">
-    <svg id="floorplan" viewBox="0 0 620 470" xmlns="http://www.w3.org/2000/svg">
-      <rect class="corridor" x="14" y="14" width="460" height="68"/>
-      <rect class="corridor" x="152" y="82" width="62" height="228"/>
-      <rect class="corridor" x="320" y="82" width="62" height="100"/>
-      <rect class="corridor" x="14" y="272" width="460" height="54"/>
-      <rect class="outer-wall" x="13" y="13" width="461" height="415"/>
+  <div class="plan-full">
+    <svg id="floorplan" viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <!-- corridors -->
+      <rect class="corridor" x="16" y="16" width="518" height="76"/>
+      <rect class="corridor" x="172" y="92" width="70" height="258"/>
+      <rect class="corridor" x="362" y="92" width="70" height="112"/>
+      <rect class="corridor" x="16" y="308" width="518" height="60"/>
+      <!-- outer wall -->
+      <rect class="outer-wall" rx="4" x="15" y="15" width="519" height="472"/>
 
-      <g class="dept" data-id="stockage" tabindex="0" role="button"><rect x="14" y="14" width="137" height="67"/><text x="82" y="41" class="dt">Stockage</text><text x="82" y="57" class="ds">matière vide</text><circle class="dept-dot" cx="133" cy="26" r="6"/></g>
-      <g class="dept" data-id="stockage" tabindex="0" role="button"><rect x="383" y="14" width="91" height="67"/><text x="428" y="41" class="dt">Stockage</text><text x="428" y="57" class="ds">matière vide</text><circle class="dept-dot" cx="461" cy="26" r="6"/></g>
-      <g class="dept" data-id="qc" tabindex="0" role="button"><rect x="14" y="82" width="137" height="189"/><text x="82" y="170" class="dt">QT Contrôle</text><text x="82" y="186" class="ds">Qualité</text><text x="82" y="201" class="ds2">Consommables &amp; Acc.</text><circle class="dept-dot" cx="133" cy="95" r="6"/></g>
-      <g class="dept" data-id="magasinier" tabindex="0" role="button"><rect x="215" y="82" width="104" height="95"/><text x="267" y="126" class="dt">Bureau</text><text x="267" y="142" class="ds">Magasinier</text><circle class="dept-dot" cx="304" cy="95" r="6"/></g>
-      <g class="dept" data-id="methodes" tabindex="0" role="button"><rect x="215" y="178" width="104" height="93"/><text x="267" y="220" class="dt">Bureau Méthodes</text><text x="267" y="236" class="ds">&amp; CONT</text><circle class="dept-dot" cx="304" cy="191" r="6"/></g>
-      <g class="dept" data-id="station" tabindex="0" role="button"><rect x="383" y="82" width="91" height="189"/><text x="428" y="170" class="dt" transform="rotate(-90,428,170)">Station traitement</text><text x="428" y="190" class="ds" transform="rotate(-90,428,193)">des effluents</text><circle class="dept-dot" cx="461" cy="95" r="6"/></g>
-      <g class="dept" data-id="machine" tabindex="0" role="button"><rect x="14" y="272" width="137" height="53"/><text x="82" y="302" class="dt">Machine</text><circle class="dept-dot" cx="133" cy="285" r="6"/></g>
-      <g class="dept" data-id="atelier" tabindex="0" role="button"><rect x="215" y="272" width="167" height="53"/><text x="298" y="295" class="dt">Atelier</text><text x="298" y="311" class="ds">Traitement de surfaces</text><circle class="dept-dot" cx="367" cy="285" r="6"/></g>
-      <g class="dept" data-id="accueil" tabindex="0" role="button"><rect x="14" y="327" width="68" height="48"/><text x="48" y="355" class="dt">Accueil</text><circle class="dept-dot" cx="66" cy="339" r="5"/></g>
-      <g class="dept" data-id="chef" tabindex="0" role="button"><rect x="83" y="327" width="68" height="48"/><text x="117" y="347" class="dt">Chef</text><text x="117" y="362" class="ds">de Zone</text><circle class="dept-dot" cx="135" cy="339" r="5"/></g>
-      <g class="dept" data-id="infirmerie" tabindex="0" role="button"><rect x="152" y="327" width="62" height="48"/><text x="183" y="355" class="dt">Infirmerie</text><circle class="dept-dot" cx="198" cy="339" r="5"/></g>
-      <g class="dept" data-id="reunion" tabindex="0" role="button"><rect x="308" y="327" width="75" height="48"/><text x="345" y="347" class="dt">Salle de</text><text x="345" y="362" class="ds">Réunion</text><circle class="dept-dot" cx="366" cy="339" r="5"/></g>
+      <!-- DEPTS -->
+      <g class="dept" data-id="stockage" tabindex="0" role="button">
+        <rect x="16" y="16" width="155" height="75"/>
+        <text x="93" y="46" class="dt" font-size="11">Stockage</text>
+        <text x="93" y="64" class="ds" font-size="8.5">matière vide</text>
+        <circle class="dept-dot" cx="152" cy="29" r="7"/>
+      </g>
+      <g class="dept" data-id="stockage" tabindex="0" role="button">
+        <rect x="433" y="16" width="101" height="75"/>
+        <text x="483" y="46" class="dt" font-size="11">Stockage</text>
+        <text x="483" y="64" class="ds" font-size="8.5">matière vide</text>
+        <circle class="dept-dot" cx="524" cy="29" r="7"/>
+      </g>
+      <g class="dept" data-id="qc" tabindex="0" role="button">
+        <rect x="16" y="92" width="155" height="215"/>
+        <text x="93" y="193" class="dt" font-size="11">QT Contrôle</text>
+        <text x="93" y="212" class="ds" font-size="9">Qualité</text>
+        <text x="93" y="229" class="ds2" font-size="7.5">Consommables &amp; Acc.</text>
+        <circle class="dept-dot" cx="152" cy="107" r="7"/>
+      </g>
+      <g class="dept" data-id="magasinier" tabindex="0" role="button">
+        <rect x="243" y="92" width="118" height="108"/>
+        <text x="302" y="142" class="dt" font-size="11">Bureau</text>
+        <text x="302" y="161" class="ds" font-size="9">Magasinier</text>
+        <circle class="dept-dot" cx="346" cy="107" r="7"/>
+      </g>
+      <g class="dept" data-id="methodes" tabindex="0" role="button">
+        <rect x="243" y="201" width="118" height="106"/>
+        <text x="302" y="248" class="dt" font-size="11">Bureau Méthodes</text>
+        <text x="302" y="267" class="ds" font-size="9">&amp; CONT</text>
+        <circle class="dept-dot" cx="346" cy="215" r="7"/>
+      </g>
+      <g class="dept" data-id="station" tabindex="0" role="button">
+        <rect x="433" y="92" width="101" height="215"/>
+        <text x="483" y="193" class="dt" font-size="10" transform="rotate(-90,483,193)">Station traitement</text>
+        <text x="483" y="215" class="ds" font-size="8" transform="rotate(-90,483,218)">des effluents</text>
+        <circle class="dept-dot" cx="524" cy="107" r="7"/>
+      </g>
+      <g class="dept" data-id="machine" tabindex="0" role="button">
+        <rect x="16" y="308" width="155" height="59"/>
+        <text x="93" y="341" class="dt" font-size="11">Machine</text>
+        <circle class="dept-dot" cx="152" cy="322" r="7"/>
+      </g>
+      <g class="dept" data-id="atelier" tabindex="0" role="button">
+        <rect x="243" y="308" width="189" height="59"/>
+        <text x="337" y="334" class="dt" font-size="11">Atelier</text>
+        <text x="337" y="353" class="ds" font-size="8.5">Traitement de surfaces</text>
+        <circle class="dept-dot" cx="416" cy="322" r="7"/>
+      </g>
+      <g class="dept" data-id="accueil" tabindex="0" role="button">
+        <rect x="16" y="369" width="77" height="53"/>
+        <text x="54" y="399" class="dt" font-size="10">Accueil</text>
+        <circle class="dept-dot" cx="74" cy="382" r="6"/>
+      </g>
+      <g class="dept" data-id="chef" tabindex="0" role="button">
+        <rect x="94" y="369" width="77" height="53"/>
+        <text x="132" y="390" class="dt" font-size="10">Chef</text>
+        <text x="132" y="407" class="ds" font-size="8">de Zone</text>
+        <circle class="dept-dot" cx="152" cy="382" r="6"/>
+      </g>
+      <g class="dept" data-id="infirmerie" tabindex="0" role="button">
+        <rect x="172" y="369" width="70" height="53"/>
+        <text x="207" y="399" class="dt" font-size="10">Infirmerie</text>
+        <circle class="dept-dot" cx="222" cy="382" r="6"/>
+      </g>
+      <g class="dept" data-id="reunion" tabindex="0" role="button">
+        <rect x="348" y="369" width="85" height="53"/>
+        <text x="390" y="390" class="dt" font-size="10">Salle de</text>
+        <text x="390" y="407" class="ds" font-size="8">Réunion</text>
+        <circle class="dept-dot" cx="416" cy="382" r="6"/>
+      </g>
 
-      <g class="dept static"><rect x="14" y="377" width="68" height="44"/><text x="48" y="402" class="ds">Vestiaire H</text></g>
-      <g class="dept static"><rect x="83" y="377" width="50" height="44"/><text x="108" y="402" class="ds">Douche H</text></g>
-      <g class="dept static"><rect x="134" y="377" width="42" height="44"/><text x="155" y="402" class="ds">WC H</text></g>
-      <g class="dept static"><rect x="215" y="377" width="68" height="44"/><text x="249" y="402" class="ds">Vestiaire F</text></g>
-      <g class="dept static"><rect x="284" y="377" width="52" height="44"/><text x="310" y="402" class="ds">Douche F</text></g>
-      <g class="dept static"><rect x="337" y="377" width="43" height="44"/><text x="358" y="402" class="ds">WC F</text></g>
+      <!-- static -->
+      <g class="dept static"><rect x="16" y="424" width="77" height="50"/><text x="54" y="452" class="ds" font-size="8">Vestiaire H</text></g>
+      <g class="dept static"><rect x="94" y="424" width="57" height="50"/><text x="122" y="452" class="ds" font-size="8">Douche H</text></g>
+      <g class="dept static"><rect x="152" y="424" width="48" height="50"/><text x="176" y="452" class="ds" font-size="8">WC H</text></g>
+      <g class="dept static"><rect x="243" y="424" width="77" height="50"/><text x="281" y="452" class="ds" font-size="8">Vestiaire F</text></g>
+      <g class="dept static"><rect x="321" y="424" width="59" height="50"/><text x="350" y="452" class="ds" font-size="8">Douche F</text></g>
+      <g class="dept static"><rect x="381" y="424" width="49" height="50"/><text x="405" y="452" class="ds" font-size="8">WC F</text></g>
 
-      <polygon class="exit-mk" points="0,50 13,43 13,57"/>
-      <polygon class="exit-mk" points="488,50 475,43 475,57"/>
-      <polygon class="exit-mk" points="240,0 233,13 247,13"/>
-      <polygon class="exit-mk" points="415,474 408,461 422,461"/>
+      <!-- exits -->
+      <polygon class="exit-mk" points="0,58 15,50 15,66"/>
+      <polygon class="exit-mk" points="548,58 534,50 534,66"/>
+      <polygon class="exit-mk" points="272,0 264,15 280,15"/>
+      <polygon class="exit-mk" points="466,535 458,520 474,520"/>
 
-      <g transform="translate(555,30)"><text x="0" y="12" class="north-lbl">N</text><line x1="6" y1="15" x2="6" y2="36" stroke="#555" stroke-width="1.5"/><polygon points="3,15 6,6 9,15" fill="#555"/></g>
+      <!-- north -->
+      <g transform="translate(640,35)">
+        <text x="0" y="13" class="north-lbl" font-size="13">N</text>
+        <line x1="7" y1="17" x2="7" y2="42" stroke="#444" stroke-width="2"/>
+        <polygon points="3,17 7,6 11,17" fill="#555"/>
+      </g>
     </svg>
-  </div>
-
-  <!-- MODAL -->
-  <div class="modal-bg" id="modal-bg" onclick="bgClose(event)">
-    <div class="modal">
-      <div class="m-head">
-        <div><h2 id="m-name"></h2><div class="m-zone" id="m-zone"></div></div>
-        <button class="m-close" onclick="closeModal()">✕</button>
-      </div>
-      <div class="m-metrics" id="m-metrics"></div>
-      <div class="m-body">
-        <div class="m-sec">Derniers incidents<span class="m-cnt" id="m-cnt"></span></div>
-        <div id="m-incs"></div>
-      </div>
-      <div class="m-actions">
-        <button class="m-btn prim" id="m-sheet">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Google Sheet
-        </button>
-        <button class="m-btn" onclick="closeModal()">← Fermer</button>
-      </div>
-    </div>
   </div>
 
   <div class="plan-legend">
@@ -228,7 +360,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 <!-- ══ VIEW: DASHBOARD ══ -->
 <div id="view-dash" class="view">
   <div class="kpi-row" id="kpi-row"></div>
-  <div class="dash-row two" style="margin-top:.7rem;">
+  <div class="dash-row two">
     <div class="card"><div class="card-title">Pareto — incidents par département</div><div id="pareto"></div></div>
     <div class="card"><div class="card-title">Répartition par type d'incident</div><div class="chart-wrap"><canvas id="type-chart"></canvas></div></div>
   </div>
@@ -239,6 +371,29 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="card">
     <div class="card-title">Tableau de bord global</div>
     <table class="dept-tbl" id="dept-tbl"></table>
+  </div>
+</div>
+
+<!-- ══ MODAL PANEL ══ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-panel">
+    <div class="mp-head">
+      <div><h2 id="mp-name"></h2><div class="mp-zone" id="mp-zone"></div></div>
+      <button class="mp-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mp-metrics" id="mp-metrics"></div>
+    <div class="mp-body">
+      <div class="mp-sec">Derniers incidents <span class="mp-cnt" id="mp-cnt"></span></div>
+      <div id="mp-incs"></div>
+    </div>
+    <div class="mp-actions">
+      <button class="mp-btn prim" id="mp-sheet">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Google Sheet
+      </button>
+      <button class="mp-btn" onclick="closeModal()">← Fermer</button>
+    </div>
   </div>
 </div>
 
@@ -286,7 +441,7 @@ let chartsInit=false;
 
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('h-date').textContent=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-  applyDots(); updateHeader(); bindClicks();
+  applyDots();updateHeader();bindClicks();
 });
 
 function applyDots(){
@@ -295,22 +450,18 @@ function applyDots(){
     document.querySelectorAll(`.dept[data-id="${id}"]`).forEach(el=>el.classList.add(c));
   });
 }
-
 function updateHeader(){
-  let acc=0,od=0;
-  Object.values(DEPTS).forEach(d=>{acc+=d.accidents;od+=d.open8D;});
+  let acc=0,od=0;Object.values(DEPTS).forEach(d=>{acc+=d.accidents;od+=d.open8D;});
   document.getElementById('h-acc').textContent=acc+' AT';
   const el=document.getElementById('h-8d');
   el.textContent=od+' 8D ouverts';el.className=od>0?'pill danger':'pill';
 }
-
 function bindClicks(){
   document.querySelectorAll('.dept[data-id]').forEach(el=>{
     el.addEventListener('click',()=>openModal(el.getAttribute('data-id')));
     el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openModal(el.getAttribute('data-id'));}});
   });
 }
-
 function switchView(v,btn){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
@@ -318,33 +469,39 @@ function switchView(v,btn){
   btn.classList.add('active');
   if(v==='dash'&&!chartsInit){initCharts();chartsInit=true;}
 }
-
 function openModal(id){
   document.querySelectorAll('.dept').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll(`.dept[data-id="${id}"]`).forEach(el=>el.classList.add('active'));
   const d=DEPTS[id];if(!d)return;
-  document.getElementById('m-name').textContent=d.name;
-  document.getElementById('m-zone').textContent=d.zone;
-  document.getElementById('m-cnt').textContent=d.incidents.length;
+  document.getElementById('mp-name').textContent=d.name;
+  document.getElementById('mp-zone').textContent=d.zone;
+  document.getElementById('mp-cnt').textContent=d.incidents.length;
   const ac=d.accidents>5?'cr':d.accidents>0?'ca':'cg';
   const oc=d.open8D>0?'cr':'cg';
-  document.getElementById('m-metrics').innerHTML=`
-    <div class="m-metric"><div class="m-mlbl">Accidents AT</div><div class="m-mval ${ac}">${d.accidents}</div></div>
-    <div class="m-metric"><div class="m-mlbl">Presque acc.</div><div class="m-mval ca">${d.nearMiss}</div></div>
-    <div class="m-metric"><div class="m-mlbl">8D ouverts</div><div class="m-mval ${oc}">${d.open8D}</div></div>
-    <div class="m-metric"><div class="m-mlbl">Total incidents</div><div class="m-mval">${d.incidents.length}</div></div>`;
-  document.getElementById('m-incs').innerHTML=d.incidents.length===0
+  document.getElementById('mp-metrics').innerHTML=`
+    <div class="mp-metric"><div class="mp-mlbl">Accidents AT</div><div class="mp-mval ${ac}">${d.accidents}</div></div>
+    <div class="mp-metric"><div class="mp-mlbl">Presque accidents</div><div class="mp-mval ca">${d.nearMiss}</div></div>
+    <div class="mp-metric"><div class="mp-mlbl">8D ouverts</div><div class="mp-mval ${oc}">${d.open8D}</div></div>
+    <div class="mp-metric"><div class="mp-mlbl">Total incidents</div><div class="mp-mval">${d.incidents.length}</div></div>`;
+  document.getElementById('mp-incs').innerHTML=d.incidents.length===0
     ?'<div class="no-inc">✓ Aucun incident enregistré</div>'
-    :d.incidents.map(i=>`<div class="inc-row"><div class="inc-date">${i.date}</div><div class="inc-b"><div class="inc-type">${i.type}${i.ref8D?` <span style="opacity:.5;font-size:9px;font-family:var(--fm)">${i.ref8D}</span>`:''}</div><div class="inc-desc">${i.desc}</div><div class="inc-act">→ ${i.action}</div><span class="badge ${i.status==='open'?'b-open':i.status==='closed'?'b-closed':'b-prog'}">${i.status==='open'?'Ouvert':i.status==='closed'?'Clôturé':'En cours'}</span></div></div>`).join('');
-  document.getElementById('m-sheet').onclick=()=>window.open(CONFIG.SHEET_URL,'_blank');
-  document.getElementById('modal-bg').classList.add('open');
+    :d.incidents.map(i=>`
+      <div class="inc-row">
+        <div class="inc-date">${i.date}</div>
+        <div class="inc-b">
+          <div class="inc-type">${i.type}${i.ref8D?` <span style="opacity:.5;font-size:10px;font-family:var(--fm)">${i.ref8D}</span>`:''}</div>
+          <div class="inc-desc">${i.desc}</div>
+          <div class="inc-act">→ ${i.action}</div>
+          <span class="badge ${i.status==='open'?'b-open':i.status==='closed'?'b-closed':'b-prog'}">${i.status==='open'?'Ouvert':i.status==='closed'?'Clôturé':'En cours'}</span>
+        </div>
+      </div>`).join('');
+  document.getElementById('mp-sheet').onclick=()=>window.open(CONFIG.SHEET_URL,'_blank');
+  document.getElementById('modal-overlay').classList.add('open');
 }
-
 function closeModal(){
-  document.getElementById('modal-bg').classList.remove('open');
+  document.getElementById('modal-overlay').classList.remove('open');
   document.querySelectorAll('.dept').forEach(el=>el.classList.remove('active'));
 }
-function bgClose(e){if(e.target===document.getElementById('modal-bg'))closeModal();}
 
 function initCharts(){
   const vals=Object.values(DEPTS);
@@ -356,28 +513,22 @@ function initCharts(){
     <div class="kpi"><div class="kpi-lbl">8D ouverts</div><div class="kpi-val cr">${od}</div><div class="kpi-sub">en cours</div></div>
     <div class="kpi"><div class="kpi-lbl">Total incidents</div><div class="kpi-val cb">${tot}</div><div class="kpi-sub">tous statuts</div></div>
     <div class="kpi"><div class="kpi-lbl">Taux AT moyen</div><div class="kpi-val ca">${(acc/vals.length).toFixed(1)}</div><div class="kpi-sub">par département</div></div>`;
-
   const sorted=vals.filter(d=>d.incidents.length>0).sort((a,b)=>b.incidents.length-a.incidents.length);
   const mx=sorted[0]?.incidents.length||1;
   document.getElementById('pareto').innerHTML=sorted.map(d=>{
     const pct=Math.round(d.incidents.length/mx*100);
     const c=d.open8D>0?'r':d.accidents>0?'a':'c';
-    return`<div class="pareto-row"><div class="pareto-lbl">${d.name}</div><div class="pareto-bg"><div class="pareto-fill ${c}" style="width:${pct}%"></div></div><div class="pareto-n">${d.incidents.length}</div></div>`;
+    return`<div class="pareto-row"><div class="p-lbl">${d.name}</div><div class="p-bg"><div class="p-fill ${c}" style="width:${pct}%"></div></div><div class="p-n">${d.incidents.length}</div></div>`;
   }).join('');
-
-  const typeCounts={};
-  vals.forEach(d=>d.incidents.forEach(i=>{typeCounts[i.type]=(typeCounts[i.type]||0)+1;}));
-  const tk=Object.keys(typeCounts);
-  new Chart(document.getElementById('type-chart'),{type:'doughnut',data:{labels:tk,datasets:[{data:tk.map(k=>typeCounts[k]),backgroundColor:['#3d7fff','#f05252','#f5a623','#22c97a','#a855f7','#14b8a6','#f97316'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b93a8',font:{size:10},boxWidth:10,padding:8}}}}});
-
-  const open8D=vals.reduce((s,d)=>s+d.open8D,0);
-  const prog8D=vals.reduce((s,d)=>s+d.incidents.filter(i=>i.status==='progress'&&i.ref8D).length,0);
-  const closed8D=vals.reduce((s,d)=>s+d.incidents.filter(i=>i.status==='closed'&&i.ref8D).length,0);
-  new Chart(document.getElementById('eightd-chart'),{type:'bar',data:{labels:['Ouverts','En cours','Clôturés'],datasets:[{data:[open8D,prog8D,closed8D],backgroundColor:['#f05252','#f5a623','#22c97a'],borderRadius:6,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8b93a8',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}}}}});
-
+  const tc={};vals.forEach(d=>d.incidents.forEach(i=>{tc[i.type]=(tc[i.type]||0)+1;}));
+  const tk=Object.keys(tc);
+  new Chart(document.getElementById('type-chart'),{type:'doughnut',data:{labels:tk,datasets:[{data:tk.map(k=>tc[k]),backgroundColor:['#3d7fff','#f05252','#f5a623','#22c97a','#a855f7','#14b8a6','#f97316'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b93a8',font:{size:10},boxWidth:10,padding:8}}}}});
+  const op=vals.reduce((s,d)=>s+d.open8D,0);
+  const pr=vals.reduce((s,d)=>s+d.incidents.filter(i=>i.status==='progress'&&i.ref8D).length,0);
+  const cl=vals.reduce((s,d)=>s+d.incidents.filter(i=>i.status==='closed'&&i.ref8D).length,0);
+  new Chart(document.getElementById('eightd-chart'),{type:'bar',data:{labels:['Ouverts','En cours','Clôturés'],datasets:[{data:[op,pr,cl],backgroundColor:['#f05252','#f5a623','#22c97a'],borderRadius:6,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b93a8'},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8b93a8',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}}}}});
   const names=vals.map(d=>d.name.length>13?d.name.slice(0,13)+'…':d.name);
   new Chart(document.getElementById('rate-chart'),{type:'bar',data:{labels:names,datasets:[{data:vals.map(d=>d.accidents),backgroundColor:vals.map(d=>d.open8D>0?'#f05252':d.accidents>0?'#f5a623':'#22c97a'),borderRadius:4,borderWidth:0}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b93a8',stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8b93a8',font:{size:10}},grid:{display:false}}}}});
-
   document.getElementById('dept-tbl').innerHTML=`<thead><tr><th>Département</th><th>AT</th><th>Presque acc.</th><th>8D ouverts</th><th>Incidents</th><th>Statut</th></tr></thead><tbody>${vals.sort((a,b)=>b.accidents-a.accidents).map(d=>`<tr><td>${d.name}</td><td><span class="tv ${d.accidents>0?'cr':'cg'}">${d.accidents}</span></td><td><span class="tv ca">${d.nearMiss}</span></td><td><span class="tv ${d.open8D>0?'cr':'cg'}">${d.open8D}</span></td><td><span class="tv">${d.incidents.length}</span></td><td><span class="badge ${d.open8D>0?'b-open':d.accidents>0?'b-prog':'b-closed'}">${d.open8D>0?'Critique':d.accidents>0?'Attention':'OK'}</span></td></tr>`).join('')}</tbody>`;
 }
 </script>
