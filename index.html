@@ -113,7 +113,10 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .dp-btn.prim:hover{background:rgba(61,127,255,.25);color:#fff;}
 
 /* ══ 8D PANEL ══ */
-#eightd-overlay .ov-panel{width:min(580px,52vw);}
+#eightd-overlay{flex-direction:row-reverse;}
+#eightd-overlay .ov-backdrop{flex:1;}
+#eightd-overlay .ov-panel{width:min(580px,52vw);border-left:none;border-right:1px solid var(--border2);transform:translateX(-100%);}
+#eightd-overlay.open .ov-panel{transform:translateX(0);}
 .ed-head{padding:1.3rem 1.5rem .9rem;border-bottom:1px solid var(--border);flex-shrink:0;}
 .ed-back{display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:10px;color:var(--text3);cursor:pointer;margin-bottom:.6rem;width:fit-content;padding:3px 0;}
 .ed-back:hover{color:var(--accent);}
